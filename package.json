@@ -1,0 +1,31 @@
+{
+  "name": "discord-cloner",
+  "version": "0.0.0",
+  "description": "A simple tool to clone discord servers",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "clone",
+    "server"
+  ],
+  "author": "Kruceo",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neogaialab/manto.git"
+  },
+  "bugs": {
+    "url": "https://github.com/neogaialab/manto/issues"
+  },
+  "homepage": "https://github.com/neogaialab/manto#readme"
+}

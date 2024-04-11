@@ -1,0 +1,6 @@
+.vscode
+data
+node_modules
+server
+test.*
+*.conf
