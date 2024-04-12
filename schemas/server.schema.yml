@@ -1,0 +1,53 @@
+type: object
+properties:
+  server_name:
+    type: string
+    description: The name of the Discord server.
+  logo_url:
+    type: string
+    description: (Optional) The URL for the server's logo.
+  inactive_channel:
+    type: string
+    description: (Optional) The name of the channel to move inactive users to.
+  inactive_timeout:
+    type: string
+    description: The amount of time before an idle user is considered inactive.
+    enum:
+      - "1min"
+      - "5min"
+      - "15min"
+      - "30min"
+      - "1h"
+  system_messages_channel:
+    type: string
+    description: The name of the channel to send system messages to.
+  send_welcome_message:
+    type: boolean
+    description: Whether to send a welcome message to new members.
+  prompt_welcome_reply_sticky:
+    type: boolean
+    description: Whether to prompt new members to reply to the welcome message with a sticky.
+  send_boost_message:
+    type: boolean
+    description: Whether to send a message when the server gets boosted.
+  send_helpful_tips:
+    type: boolean
+    description: Whether to send helpful tips to members occasionally.
+  default_notifications:
+    type: string
+    description: The default notification settings for members.
+    enum:
+      - all_messages
+      - only_mentions
+  show_boost_progress_bar:
+    type: boolean
+    description: Whether to show the server boost progress bar.
+  server_banner_background_url:
+    type: string
+    description: (Optional) The URL for the server banner background image.
+  server_invite_background_url:
+    type: string
+    description: (Optional) The URL for the server invite background image.
+required:
+  - server_name
+description: Defines general settings for a Discord server.

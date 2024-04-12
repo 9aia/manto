@@ -1,0 +1,26 @@
+type: object
+properties:
+  name:
+    type: string
+    description: The name of the role.
+  color:
+    type: string
+    description: The hexadecimal color code for the role (e.g., \#0000ff).
+  icon_url:
+    type: string
+    description: (Optional) The URL for the role's icon.
+  separate_from_online:
+    type: boolean
+    description: Whether to separate members with this role from online users.
+  allow_mention:
+    type: boolean
+    description: Whether to allow members with this role to be mentioned.
+  permissions:
+    type: string
+    description: (Optional) A string representation of permissions for this role. 
+required:
+  - name
+  - color
+  - separate_from_online
+  - allow_mention
+description: Defines a role for a Discord server.

@@ -1,0 +1,23 @@
+{
+  "yaml.schemas": {
+    "./schemas/role.schema.yml": [
+      "**/roles/*.{yml,yaml}"
+    ],
+    "./schemas/server.schema.yml": [
+      "**/server.{yml,yaml}",
+      "**/_server.{yml,yaml}"
+    ],
+    "./schemas/channel.schema.yml": [
+      "**/channels/**/*.{yml,yaml}",
+      "!**/channels/**/_*.{yml,yaml}"
+    ],
+    "./schemas/permissions.schema.yml": [
+      "**/channels/**/_perms.{yml,yaml}",
+      "**/channels/**/_permissions.{yml,yaml}",
+    ],
+    "./schemas/category.schema.yml": [
+      "**/channels/**/_category*.{yml,yaml}",
+      "**/categories/**/*.{yml,yaml}"
+    ],
+  }
+}

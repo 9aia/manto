@@ -1,0 +1,9 @@
+type: object
+properties:
+  view_channel:
+    type: array
+    description: A list of users or roles who can view the channel.
+    items:
+      type: string
+      description: A user mention or role name (e.g., "@everyone", "role_name").
+description: Defines permissions for a channel (assuming view_channel represents the permission).
