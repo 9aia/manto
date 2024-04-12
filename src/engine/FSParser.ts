@@ -1,4 +1,4 @@
-import { CategoryChannel, Colors, Guild } from 'discord.js'
+import { CategoryChannel, Colors, Guild, GuildDefaultMessageNotifications, TextChannel } from 'discord.js'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'yaml'
@@ -6,6 +6,7 @@ import { FSCategoryConfig } from './interfaces/FSCategory'
 import { FSChannelConfig } from './interfaces/FSChannel'
 import { createCategory, createChannel } from './Creator'
 import { FSRoleConfig } from './interfaces/FSRole'
+import { FSGuildConfig, InactiveUserTimeout } from './interfaces/FSGuild'
 
 async function parseFS(guild: Guild, dir: string) {
     const serverDir = dir
@@ -21,14 +22,14 @@ async function parseFS(guild: Guild, dir: string) {
 
     // Create Roles
     for (const rolesPath of rolesScan) {
-        const config:FSRoleConfig = yaml.parse(fs.readFileSync(rolesPath,"utf-8"))
+        const config: FSRoleConfig = yaml.parse(fs.readFileSync(rolesPath, "utf-8"))
         await guild.roles.create({
-            name:config.name,
-            color:config.color,
-            icon:config.icon_url,
-            mentionable:config.allow_mention,
-            permissions:config.permissions,
-            hoist:config.separate_from_online
+            name: config.name,
+            color: config.color,
+            icon: config.icon_url,
+            mentionable: config.allow_mention,
+            permissions: config.permissions,
+            hoist: config.separate_from_online
         })
     }
 
@@ -46,7 +47,29 @@ async function parseFS(guild: Guild, dir: string) {
         }
     }
 
+    const serverConfig: FSGuildConfig = yaml.parse(fs.readFileSync(serverFile, "utf8"))
 
+    guild.setDefaultMessageNotifications(serverConfig.default_notifications == "all_messages" ? 0 : 1)
+
+    guild.setIcon(serverConfig.logo_url)
+    guild.setName(serverConfig.server_name)
+
+    guild.setPremiumProgressBarEnabled(serverConfig.show_boost_progress_bar)
+
+    guild.setAFKTimeout(InactiveUserTimeout[serverConfig.inactive_timeout ?? "5min"] as number)
+
+    const systemReferenciedChannel = guild.channels.cache.filter((ch => ch.name == serverConfig.system_messages_channel?.toLowerCase().replace(" ", "-") && ch.type == 0)).at(0)
+    const afkReferenciedChannel = guild.channels.cache.filter((ch => ch.name == serverConfig.inactive_channel)).at(0)
+
+    guild.setSystemChannel(systemReferenciedChannel?.id ?? null)
+    guild.setAFKChannel(afkReferenciedChannel?.id ?? null)
+
+    guild.setBanner(serverConfig.server_banner_background_url ?? null)
+
+    // not added 
+    // prompt welcome reply sticky
+    // send boost message
+    // send welcome message
 }
 
 async function createChannelsFromGroup(guild: Guild, dirPath: string) {

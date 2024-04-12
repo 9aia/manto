@@ -1,4 +1,10 @@
-type InactiveUserTimeout = "1min" | "5min" | "15min" | "30min" | "1h"
+enum InactiveUserTimeout {
+    "1min" = 60,
+    "5min" = 5 * 60,
+    "15min" = 15 * 60,
+    "30min" = 30 * 60,
+    "1h" = 60 * 60,
+}
 
 interface FSGuildConfig {
     server_name: string
@@ -16,4 +22,4 @@ interface FSGuildConfig {
     server_invite_background_url?: string
 }
 
-export { FSGuildConfig }
+export { FSGuildConfig, InactiveUserTimeout }

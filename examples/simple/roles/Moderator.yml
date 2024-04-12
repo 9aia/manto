@@ -3,4 +3,4 @@ color: Green
 icon_url: ""
 separate_from_online: true
 allow_mention: true
-permissions: ""
+permissions: [BanMembers,KickMembers,MuteMembers]
