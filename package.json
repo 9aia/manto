@@ -1,6 +1,6 @@
 {
   "name": "discord-cloner",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A simple tool to clone discord servers",
   "main": "index.ts",
   "scripts": {
@@ -18,7 +18,8 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "discord.js": "^14.14.1"
+    "discord.js": "^14.14.1",
+    "yaml": "^2.4.1"
   },
   "repository": {
     "type": "git",

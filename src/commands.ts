@@ -1,8 +1,6 @@
 import { Client } from "discord.js";
-
-import save from "./save";
-import cloneGuild from "./clone";
-function cloneHandler(client: Client) {
+import { parseFS } from "./engine/FSParser";
+function engineHandler(client: Client) {
 
     client.on("messageCreate", async (message) => {
         if (!message.guild) return
@@ -10,18 +8,12 @@ function cloneHandler(client: Client) {
         const args = message.content.split(/ +/)
 
         switch (args[0]) {
-            case "!save":
-                message.channel.send("Saving...")
-                if (!args[1]) {
-                    message.reply("Use `!save <template-name>`")
-                    break
-                }
-                await save(message.guild, args[1])
-                message.channel.send("Saved as " + args[1])
-                break;
-
             case "!clone":
-                await cloneGuild(message.guild, args[1])
+                if (!args[1] || args[1].trim() == "") {
+                    message.reply("Use !clone `name of your template`")
+                    break;
+                }
+                await parseFS(message.guild, "./templates/" + args[1])
                 break;
 
             /// THIS IS FOR TESTING
@@ -35,7 +27,7 @@ function cloneHandler(client: Client) {
     })
 }
 
-export default { cloneHandler }
-export { cloneHandler }
+export default { engineHandler }
+export { engineHandler }
 
 

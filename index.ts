@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits } from 'discord.js'
-import { cloneHandler } from './src/commands'
+import { engineHandler } from './src/commands'
 
 const client = new Client({
     intents: [
@@ -19,6 +19,6 @@ client.on("error", (err) => {
     console.error("Error\n",err)
 })
 
-cloneHandler(client)
+engineHandler(client)
 
 client.login(process.env.TOKEN)
