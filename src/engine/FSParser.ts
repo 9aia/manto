@@ -19,6 +19,7 @@ async function parseFS(guild: Guild, dir: string) {
     const channelsScan = fs.readdirSync(channelsDir).map(fileName => path.resolve(channelsDir, fileName))
     const rolesScan = fs.readdirSync(rolesDir).map(fileName => path.resolve(rolesDir, fileName))
 
+    // Create Roles
     for (const rolesPath of rolesScan) {
         const config:FSRoleConfig = yaml.parse(fs.readFileSync(rolesPath,"utf-8"))
         await guild.roles.create({
@@ -31,6 +32,7 @@ async function parseFS(guild: Guild, dir: string) {
         })
     }
 
+    // Create Channels and Categories
     for (const channelPath of channelsScan) {
         const stat = fs.lstatSync(channelPath)
 

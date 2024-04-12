@@ -3,7 +3,8 @@ import { FSCategoryConfig } from "./interfaces/FSCategory";
 import { FSChannelConfig, PermissionsFromSchema } from "./interfaces/FSChannel";
 
 async function createCategory(guild: Guild, config: FSCategoryConfig, perms: { [key: string]: string[] }) {
-    const parsedPerms = parseSchemaPermissions(perms)
+    const parsedPerms = parseSchemaPermissions(perms, guild)
+    
     const c = await guild.channels.create({
         name: config.category_name,
         type: 4 // Category Channel
@@ -20,7 +21,7 @@ async function createCategory(guild: Guild, config: FSCategoryConfig, perms: { [
 }
 
 async function createChannel(guild: Guild, config: FSChannelConfig, parentId?: string) {
-    const parsedPerms = parseSchemaPermissions(config.permissions ?? {} as any)
+    const parsedPerms = parseSchemaPermissions(config.permissions ?? {} as any, guild)
 
     let type = 0
     switch (config.type) {
@@ -50,10 +51,24 @@ async function createChannel(guild: Guild, config: FSChannelConfig, parentId?: s
     // 
 }
 
-/** Parse permissions of a yaml configuration file in a usable mode for Discord.js */
-function parseSchemaPermissions(rawPerms: { [key: string]: string[] }) {
-    const permslist = Object.entries(rawPerms) as ([PermissionsFromSchema, string[]])[]
+/** Parse permissions of a yaml configuration file in a usable mode for Discord.js 
+ * If a guild is in args, this will switch the name for the role id in mentioned roles
+*/
+function parseSchemaPermissions(rawPerms: { [key: string]: string[] }, guild?: Guild) {
+    let permslist = Object.entries(rawPerms) as ([PermissionsFromSchema, string[]])[]
 
+    if (guild) {
+        const guildRoles = guild.roles.cache.map(role => { return { name: role.name, id: role.id } })
+
+        permslist = permslist.map(perm => {
+            perm[1] = perm[1].map(roleCitated => {
+                const catched = guildRoles.filter(guildRole => guildRole.name == roleCitated)[0]
+                if (catched) return catched.id
+                return roleCitated
+            })
+            return perm
+        })
+    }
     let separated: any = {}
 
     permslist.forEach(permissionLine => {
@@ -79,5 +94,5 @@ function parseSchemaPermissions(rawPerms: { [key: string]: string[] }) {
     })
 }
 
-export { createCategory, createChannel }
-export default { createCategory, createChannel }
+export { createCategory, createChannel, parseSchemaPermissions }
+export default { createCategory, createChannel, parseSchemaPermissions }
