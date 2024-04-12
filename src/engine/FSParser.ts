@@ -1,10 +1,11 @@
-import { CategoryChannel, Guild } from 'discord.js'
+import { CategoryChannel, Colors, Guild } from 'discord.js'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'yaml'
 import { FSCategoryConfig } from './interfaces/FSCategory'
 import { FSChannelConfig } from './interfaces/FSChannel'
 import { createCategory, createChannel } from './Creator'
+import { FSRoleConfig } from './interfaces/FSRole'
 
 async function parseFS(guild: Guild, dir: string) {
     const serverDir = dir
@@ -16,19 +17,34 @@ async function parseFS(guild: Guild, dir: string) {
     const serverFile = path.resolve(serverDir, "server.yml")
 
     const channelsScan = fs.readdirSync(channelsDir).map(fileName => path.resolve(channelsDir, fileName))
+    const rolesScan = fs.readdirSync(rolesDir).map(fileName => path.resolve(rolesDir, fileName))
 
-    for (const scannedPath of channelsScan) {
-        const stat = fs.lstatSync(scannedPath)
+    for (const rolesPath of rolesScan) {
+        const config:FSRoleConfig = yaml.parse(fs.readFileSync(rolesPath,"utf-8"))
+        await guild.roles.create({
+            name:config.name,
+            color:config.color,
+            icon:config.icon_url,
+            mentionable:config.allow_mention,
+            permissions:config.permissions,
+            hoist:config.separate_from_online
+        })
+    }
+
+    for (const channelPath of channelsScan) {
+        const stat = fs.lstatSync(channelPath)
 
         // if is directory = GROUP of channels
         if (stat.isDirectory()) {
-            await createChannelsFromGroup(guild, scannedPath)
+            await createChannelsFromGroup(guild, channelPath)
         }
         else {
-            const config: FSChannelConfig = yaml.parse(fs.readFileSync(scannedPath, "utf8"))
+            const config: FSChannelConfig = yaml.parse(fs.readFileSync(channelPath, "utf8"))
             await createChannel(guild, config)
         }
     }
+
+
 }
 
 async function createChannelsFromGroup(guild: Guild, dirPath: string) {
