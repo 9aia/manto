@@ -9,9 +9,6 @@ properties:
     enum:
       - "voice"
       - "text"
-  category:
-    type: string
-    description: (Optional) The existing category ID to which the channel belongs.
   permissions:
     $ref: './permissions.schema.yml'
     description: (Optional) A string representation of permissions for this channel.
