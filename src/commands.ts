@@ -1,5 +1,6 @@
 import { Client } from "discord.js";
 import { parseFS } from "./engine/FSParser";
+import fs from 'fs'
 function engineHandler(client: Client) {
 
     client.on("messageCreate", async (message) => {
@@ -10,10 +11,17 @@ function engineHandler(client: Client) {
         switch (args[0]) {
             case "!clone":
                 if (!args[1] || args[1].trim() == "") {
-                    message.reply("Use !clone `name of your template`")
+                    message.reply("Use !clone `name of your template`.")
                     break;
                 }
-                await parseFS(message.guild, "./templates/" + args[1])
+                const templatePath = "./templates/" + args[1]
+                if (!fs.existsSync(templatePath)) {
+                    message.reply("This template not exists!")
+                    break
+                }
+                message.reply(`Cloning from \`${args[1]}\`.`)
+                await parseFS(message.guild, templatePath)
+                message.reply(`Cloning complete.`)
                 break;
 
             /// THIS IS FOR TESTING
