@@ -45,16 +45,4 @@ TOKEN=YourTokenHere ts-node index.ts
 
 ## Developer Guide
 
-### Requirements
-
-- Node.js
-- NPM
-- Git
-
-### Installation
-
-```bash
-git clone https://github.com/neogaialab/manto
-cd manto
-npm i
-```
+Check out [CONTRIBUTING](/CONTRIBUTING.md).
