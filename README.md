@@ -1,6 +1,6 @@
 # Manto
 
-This project aims to simplify Discord server configuration through a file system approach. 
+This project aims to simplify Discord server configuration through a file system approach.
 
 **Note**: This project serves as a framework for server configuration. Additional scripting might be needed for automation or specific functionalities.
 

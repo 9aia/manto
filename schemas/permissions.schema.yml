@@ -304,6 +304,5 @@ properties:
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
 
 description: Defines permissions for a channel.

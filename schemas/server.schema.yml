@@ -13,11 +13,11 @@ properties:
     type: string
     description: The amount of time before an idle user is considered inactive.
     enum:
-      - "1min"
-      - "5min"
-      - "15min"
-      - "30min"
-      - "1h"
+      - 1min
+      - 5min
+      - 15min
+      - 30min
+      - 1h
   system_messages_channel:
     type: string
     description: The name of the channel to send system messages to.

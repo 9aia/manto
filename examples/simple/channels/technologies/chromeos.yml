@@ -1,5 +1,5 @@
-channel_name: "Chrome OS"
+channel_name: Chrome OS
 topic: ""
-slow_mode: "5s"
+slow_mode: 5s
 age_restricted: false
-hide_threads_after: "1h"
+hide_threads_after: 1h

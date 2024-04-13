@@ -1,6 +1,6 @@
-name: "👮 Moderator"
+name: 👮 Moderator
 color: Green
 icon_url: ""
 separate_from_online: true
 allow_mention: true
-permissions: [BanMembers,KickMembers,MuteMembers]
+permissions: [BanMembers, KickMembers, MuteMembers]
