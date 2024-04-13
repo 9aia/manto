@@ -1,7 +1,7 @@
 {
-  "name": "discord-cloner",
+  "name": "manto",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "A simple tool to clone discord servers",
   "author": "Kruceo",
   "license": "UNLICENSED",
@@ -22,7 +22,8 @@
   "main": "src/entry.ts",
   "scripts": {
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "release": "release-it"
   },
   "dependencies": {
     "discord.js": "^14.14.1",
@@ -31,7 +32,9 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.13.3",
+    "@release-it/keep-a-changelog": "^5.0.0",
     "eslint": "^8.57.0",
+    "release-it": "^17.2.0",
     "typescript": "^5.4.5"
   }
 }
