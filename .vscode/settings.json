@@ -28,5 +28,12 @@
     "**/.DS_Store": true,
     "**/Thumbs.db": true
   },
-  "hide-files.files": []
+  "hide-files.files": [],
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json, .gitignore, tsconfig.json, *.d.ts, .release-it.json, eslint.config.*",
+    "README.md": "CHANGELOG*, LICENSE, CONTRIBUTING*",
+    ".env": ".env.*"
+  },
 }

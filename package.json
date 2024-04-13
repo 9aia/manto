@@ -2,7 +2,7 @@
   "name": "discord-cloner",
   "version": "0.1.0",
   "description": "A simple tool to clone discord servers",
-  "main": "index.ts",
+  "main": "src/entry.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
