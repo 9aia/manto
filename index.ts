@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { Client, GatewayIntentBits } from 'discord.js'
 import { engineHandler } from './src/commands'
 
@@ -21,4 +22,4 @@ client.on("error", (err) => {
 
 engineHandler(client)
 
-client.login(process.env.TOKEN)
+client.login(process.env.DISCORD_TOKEN)
