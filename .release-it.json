@@ -1,0 +1,29 @@
+{
+  "git": {
+    "commitMessage": "chore: release v${version}",
+    "tagAnnotation": "Release v${version}",
+    "tagName": "v@${version}"
+  },
+  "github": {
+    "draft": true,
+    "release": true,
+    "releaseName": "v${version}"
+  },
+  "npm": {
+    "publish": false
+  },
+  "plugins": {
+    "@release-it/keep-a-changelog": {
+      "addUnreleased": true,
+      "strictLatest": false,
+      "filename": "CHANGELOG.md"
+    }
+  },
+  "hooks": {
+    "before:init": [
+      "npm run lint"
+    ],
+    "after:bump": "npm run build",
+    "after:release": "echo Successfully released v${version} to ${repo.repository}."
+  }
+}

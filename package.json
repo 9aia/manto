@@ -1,26 +1,10 @@
 {
-  "name": "discord-cloner",
-  "version": "0.1.0",
+  "name": "manto",
+  "version": "0.0.0",
   "description": "A simple tool to clone discord servers",
-  "main": "index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "discord",
-    "bot",
-    "clone",
-    "server"
-  ],
   "author": "Kruceo",
   "license": "UNLICENSED",
-  "devDependencies": {
-    "typescript": "^5.4.5"
-  },
-  "dependencies": {
-    "discord.js": "^14.14.1",
-    "yaml": "^2.4.1"
-  },
+  "homepage": "https://github.com/neogaialab/manto#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/neogaialab/manto.git"
@@ -28,5 +12,32 @@
   "bugs": {
     "url": "https://github.com/neogaialab/manto/issues"
   },
-  "homepage": "https://github.com/neogaialab/manto#readme"
+  "keywords": [
+    "discord",
+    "bot",
+    "clone",
+    "server"
+  ],
+  "main": "src/entry.ts",
+  "scripts": {
+    "start": "bun .",
+    "dev": "bun --hot src/entry.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"Error: no build specified\" && exit 1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "release": "release-it"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5",
+    "yaml": "^2.4.1"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^2.13.3",
+    "@release-it/keep-a-changelog": "^5.0.0",
+    "eslint": "^8.57.0",
+    "release-it": "^17.2.0",
+    "typescript": "^5.4.5"
+  }
 }

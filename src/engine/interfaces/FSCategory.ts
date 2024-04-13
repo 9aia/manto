@@ -1,6 +1,5 @@
 interface FSCategoryConfig {
-    category_name: string,
+  category_name: string
 }
 
-export { FSCategoryConfig };
-
+export { FSCategoryConfig }
