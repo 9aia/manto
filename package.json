@@ -1,6 +1,5 @@
 {
   "name": "manto",
-  "type": "module",
   "version": "0.0.0",
   "description": "A simple tool to clone discord servers",
   "author": "Kruceo",
@@ -21,6 +20,10 @@
   ],
   "main": "src/entry.ts",
   "scripts": {
+    "start": "bun .",
+    "dev": "bun --hot src/entry.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"Error: no build specified\" && exit 1",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "release": "release-it"

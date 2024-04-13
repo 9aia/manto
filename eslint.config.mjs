@@ -1,4 +1,4 @@
-// eslint.config.js
+// eslint.config.mjs
 import antfu from "@antfu/eslint-config"
 
 export default antfu({
