@@ -61,10 +61,20 @@ function parseSchemaPermissions(rawPerms: { [key: string]: string[] }, guild?: G
     const guildRoles = guild.roles.cache.map((role) => {
       return { name: role.name, id: role.id }
     })
+    const guildMembers = guild.members.cache.map((member) => {
+      return { name: member.user.username, id: member.id }
+    })
 
     permslist = permslist.map((perm) => {
       perm[1] = perm[1].map((roleCitated) => {
-        const catched = guildRoles.filter(guildRole => guildRole.name === roleCitated)[0]
+
+        // try to catch any role with the role citated in the config file _perms
+        let catched = guildRoles.filter(guildRole => guildRole.name === roleCitated)[0]
+        if (catched)
+          return catched.id
+
+        // if not catched a role, this will try with guild members
+        catched = guildMembers.filter(member => member.name === roleCitated)[0]
         if (catched)
           return catched.id
         return roleCitated
