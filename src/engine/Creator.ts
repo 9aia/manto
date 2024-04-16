@@ -1,6 +1,6 @@
 import type { CategoryChannel, Guild, PermissionsString } from "discord.js"
 import type { FSCategoryConfig } from "./interfaces/FSCategory"
-import type { FSChannelConfig, PermissionsFromSchema } from "./interfaces/FSChannel"
+import { type ChannelSchemaPermission, type FSChannelConfig, channelSchemaPermissions } from "./interfaces/FSChannel"
 
 async function createCategory(guild: Guild, config: FSCategoryConfig, perms: { [key: string]: string[] }) {
   const parsedPerms = parseSchemaPermissions(perms, guild)
@@ -55,7 +55,7 @@ async function createChannel(guild: Guild, config: FSChannelConfig, parentId?: s
  * If a guild is in args, this will switch the name for the role id in mentioned roles
  */
 function parseSchemaPermissions(rawPerms: { [key: string]: string[] }, guild?: Guild) {
-  let permslist = Object.entries(rawPerms) as ([PermissionsFromSchema, string[]])[]
+  let permslist = Object.entries(rawPerms) as ([ChannelSchemaPermission, string[]])[]
 
   if (guild) {
     const guildRoles = guild.roles.cache.map((role) => {
@@ -77,6 +77,8 @@ function parseSchemaPermissions(rawPerms: { [key: string]: string[] }, guild?: G
         catched = guildMembers.filter(member => member.name === roleCitated)[0]
         if (catched)
           return catched.id
+
+        // not catched anyone
         return roleCitated
       })
       return perm
@@ -84,16 +86,20 @@ function parseSchemaPermissions(rawPerms: { [key: string]: string[] }, guild?: G
   }
   const separated: any = {}
 
+  const defaultPermissionModel = channelSchemaPermissions.reduce((acc, perm) => {
+    const permKey = schemaToDiscordPermName(perm)
+    acc[permKey] = false
+    return acc
+  }, {} as { [key: string]: boolean })
+
+  // create a simple map like this { username1:{ perm1:true, perm2:true }}
   permslist.forEach((permissionLine) => {
     permissionLine[1].forEach((target) => {
       if (!separated[target])
-        separated[target] = {}
+        separated[target] = { ...defaultPermissionModel }
 
       // Turn this "view_channel" in this "ViewChannel"
-      const permKey = permissionLine[0].split("_").reduce((acc, next) => {
-        const newText = next.slice(0, 1).toUpperCase() + next.slice(1)
-        return acc + newText
-      }, "")
+      const permKey = schemaToDiscordPermName(permissionLine[0])
 
       separated[target][permKey] = true
     })
@@ -106,6 +112,23 @@ function parseSchemaPermissions(rawPerms: { [key: string]: string[] }, guild?: G
       perms: each[1] as Partial<Record<PermissionsString, boolean>>,
     }
   })
+}
+
+function schemaToDiscordPermName(perm: string) {
+  switch (perm) {
+    case "send_tts_messages":
+      return "SendTTSMessages"
+    case "use_vad":
+      return "UseVAD"
+    default:
+      break
+  }
+
+  const permKey = perm.split("_").reduce((acc, next) => {
+    const newText = next.slice(0, 1).toUpperCase() + next.slice(1)
+    return acc + newText
+  }, "")
+  return permKey
 }
 
 export { createCategory, createChannel, parseSchemaPermissions }
