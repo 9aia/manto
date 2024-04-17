@@ -1,13 +1,13 @@
 import { existsSync } from "node:fs"
 import { SlashCommandBuilder } from "discord.js"
 import { parseFS } from "../engine/FSParser"
-import type { ExecuteFn } from "./types"
+import type { ExecuteFn } from "../types"
 
 export const data = new SlashCommandBuilder()
   .setName("clone")
   .setDescription("Clone a server.")
   .addStringOption(o => o
-    .setName("templateName")
+    .setName("template-name")
     .setDescription("Template name to be used.")
     .setRequired(true),
   )
