@@ -9,8 +9,7 @@ import type { FSRoleConfig } from "./interfaces/FSRole"
 import type { FSGuildConfig } from "./interfaces/FSGuild"
 import { InactiveUserTimeout } from "./interfaces/FSGuild"
 
-async function parseFS(guild: Guild, dir: string) {
-  const serverDir = dir
+async function parseFS(guild: Guild, serverDir: string) {
 
   const channelsDir = path.resolve(serverDir, "channels")
 

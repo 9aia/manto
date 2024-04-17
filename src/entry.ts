@@ -2,6 +2,7 @@ import "dotenv/config"
 import process from "node:process"
 import { Client, GatewayIntentBits } from "discord.js"
 import { engineHandler } from "./commands"
+import { configureAmbient } from "./engine/ambient"
 
 const client = new Client({
   intents: [
@@ -22,5 +23,6 @@ client.on("error", (err) => {
 })
 
 engineHandler(client)
+configureAmbient()
 
 client.login(process.env.DISCORD_TOKEN)
