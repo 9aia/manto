@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js"
-import type { ExecuteFn } from "../types"
+import type { ExecuteFn } from "../../lib/discord/slash-commands/types"
 
 export const data = new SlashCommandBuilder()
   .setName("ping")
