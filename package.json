@@ -21,7 +21,7 @@
   "main": "src/entry.ts",
   "scripts": {
     "start": "bun .",
-    "dev": "bun --hot src/entry.ts",
+    "dev": "bun --watch src/entry.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "echo \"Error: no build specified\" && exit 1",
     "lint": "eslint .",
