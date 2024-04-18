@@ -1,9 +1,11 @@
 import "dotenv/config"
 import process from "node:process"
-import { Client, GatewayIntentBits } from "discord.js"
+import { join } from "node:path"
+import { Client, Collection, GatewayIntentBits } from "discord.js"
+import loadCommands from "../lib/discord/slash-commands/loadCommands"
 import { engineHandler } from "./commands"
 
-const client = new Client({
+export const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
@@ -12,6 +14,9 @@ const client = new Client({
     GatewayIntentBits.GuildVoiceStates,
   ],
 })
+client.commands = new Collection()
+
+loadCommands(client, join(__dirname, "commands"))
 
 client.on("ready", () => {
   console.log("Logged in with", client.user?.username)
