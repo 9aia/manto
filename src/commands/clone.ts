@@ -13,16 +13,23 @@ export const data = new SlashCommandBuilder()
   )
 
 export const execute: ExecuteFn = async (inter) => {
-  const templatePath = `./templates/${inter.templateName}`
+  const templateName = inter.options.getString("template-name")
+
+  const templatePath = `./templates/${templateName}`
 
   if (!existsSync(templatePath)) {
-    await inter.reply("This template not exists!")
+    await inter.reply({ content: `Template not found: ${templateName}`, ephemeral: true })
     return
   }
 
-  await inter.reply(`Cloning from \`${inter.templateName}\`.`)
+  if (!inter.guild) {
+    await inter.reply({ content: `This command should be executed inside a guild.`, ephemeral: true })
+    return
+  }
+
+  await inter.reply({ content: `Cloning from \`${templateName}\`.`, ephemeral: true })
 
   await parseFS(inter.guild, templatePath)
 
-  await inter.reply(`Cloning complete.`)
+  await inter.editReply({ content: `Cloning complete.` })
 }
