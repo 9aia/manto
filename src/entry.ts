@@ -1,10 +1,15 @@
 import "dotenv/config"
 import process from "node:process"
-import { Client, GatewayIntentBits } from "discord.js"
+import { join } from "node:path"
+import { Client, Collection, GatewayIntentBits, REST } from "discord.js"
+import loadCommands from "../lib/discord/slash-commands/loadCommands"
+import deployCommands from "../lib/discord/slash-commands/deployCommands"
+import handleCommands from "../lib/discord/slash-commands/handleCommands"
 import { engineHandler } from "./commands"
 import { configureAmbient } from "./engine/ambient"
 
-const client = new Client({
+export const rest = new REST().setToken(process.env.DISCORD_TOKEN!)
+export const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
@@ -13,6 +18,13 @@ const client = new Client({
     GatewayIntentBits.GuildVoiceStates,
   ],
 })
+client.commands = new Collection()
+
+loadCommands(client, join(__dirname, "commands")).then(() => {
+  deployCommands(client, rest)
+})
+
+client.on("interactionCreate", handleCommands)
 
 client.on("ready", () => {
   console.log("Logged in with", client.user?.username)
