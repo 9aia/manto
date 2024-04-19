@@ -62,21 +62,23 @@ async function parseFS(guild: Guild, serverDir: string) {
   // send welcome message
 }
 
-async function createChannelsFromGroup(guild: Guild, dirPath: string, oldParentID?: string) {
+async function createChannelsFromGroup(guild: Guild, dirPath: string, outerParentID?: string, outerPerms?: { [key: string]: string[] }) {
   const _categoryPath = path.resolve(dirPath, "_category.yml")
   const _permsPath = path.resolve(dirPath, "_perms.yml")
 
-  let perms: { [key: string]: string[] } = {}
+  let perms: { [key: string]: string[] } = outerPerms ?? {}
 
   // load _perms.yml if exists
-  if (fs.existsSync(_permsPath))
-    perms = yaml.parse(fs.readFileSync(_permsPath, "utf-8"))
+  if (fs.existsSync(_permsPath)) {
+    const loadedPerm = yaml.parse(fs.readFileSync(_permsPath, "utf-8"))
+    perms = {...perms,...loadedPerm}
+  }
 
   const isCategory = fs.existsSync(_categoryPath)
 
   // this will receive a category channel id if this group is has _category.yml
   // this nows receive the oldParentID for recursion
-  let parentId: string | undefined = oldParentID
+  let parentId: string | undefined = outerParentID
 
   if (isCategory) {
     // Creates a category channel and puts the id in parentID variable
@@ -96,7 +98,7 @@ async function createChannelsFromGroup(guild: Guild, dirPath: string, oldParentI
       // this receives the current parentID
       // if inner channels of this inner dir not has a category file,
       // it will receive the current parentID 
-      await createChannelsFromGroup(guild, channelFilePath, parentId)
+      await createChannelsFromGroup(guild, channelFilePath, parentId, perms)
       continue
     }
 
