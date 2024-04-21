@@ -84,30 +84,18 @@ function parseSchemaPermissions(rawPerms: { [key: string]: string[] }, guild?: G
       return perm
     })
   }
-  const separated: any = {
-
-  }
-
-  const defaultPermissionModel = channelSchemaPermissions.reduce((acc, perm) => {
-    const permKey = schemaToDiscordPermName(perm)
-    acc[permKey] = false
-    return acc
-  }, {} as { [key: string]: boolean })
-
-  // this will not still here,
-  if (guild)
-    separated[guild.roles.everyone.id] = defaultPermissionModel
+  const separated: any = {}
 
   // create a simple map like this { username1:{ perm1:true, perm2:true }}
   permslist.forEach((permissionLine) => {
     permissionLine[1].forEach((target) => {
       if (!separated[target])
-        separated[target] = { ...defaultPermissionModel }
+        separated[target] = {}
 
-      // Turn this "view_channel" in this "ViewChannel"
-      const permKey = schemaToDiscordPermName(permissionLine[0])
+      const perm = abstPerm(permissionLine[0])
+      if (!perm) return;
 
-      separated[target][permKey] = true
+      separated[target][perm.name] = perm.value
     })
   })
 
@@ -120,22 +108,22 @@ function parseSchemaPermissions(rawPerms: { [key: string]: string[] }, guild?: G
   })
 }
 
-function schemaToDiscordPermName(perm: string) {
-  switch (perm) {
-    case "send_tts_messages":
-      return "SendTTSMessages"
-    case "use_vad":
-      return "UseVAD"
-    default:
-      break
-  }
+/**Return the perm name and if it's true or false based in the input string */
+function abstPerm(perm: string): { name: string, value?: boolean } {
+  const regxp = /(Allow|Deny|Default)(\w+)/
+  const match = perm.match(regxp)
+  if (!match) return { name: perm };
+  const [_, value, name] = match
 
-  const permKey = perm.split("_").reduce((acc, next) => {
-    const newText = next.slice(0, 1).toUpperCase() + next.slice(1)
-    return acc + newText
-  }, "")
-  return permKey
-}
+  switch (value) {
+    case "Allow":
+      return { name, value: true }
+    case "Deny":
+      return { name, value: false }
+    default:
+      return { name, value: undefined }
+  }
+} 
 
 export { createCategory, createChannel, parseSchemaPermissions }
 export default { createCategory, createChannel, parseSchemaPermissions }
