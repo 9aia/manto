@@ -1,11 +1,11 @@
-import type { CategoryChannel, Guild, PermissionsString } from "discord.js"
+import type { CategoryChannel, Guild } from "discord.js"
 import type { FSCategoryConfig } from "./interfaces/FSCategory"
-import { FSChannelConfig } from "./interfaces/FSChannel"
+import type { FSChannelConfig } from "./interfaces/FSChannel"
 import { parseSchemaPermissions } from "./permissionParser"
 
 async function createCategory(guild: Guild, config: FSCategoryConfig, perms: { [key: string]: string[] }) {
-  const parsedPerms = perms?parseSchemaPermissions(perms,guild):[]
-  
+  const parsedPerms = perms ? parseSchemaPermissions(perms, guild) : []
+
   const c = await guild.channels.create({
     name: config.category_name,
     type: 4, // Category Channel
@@ -21,7 +21,7 @@ async function createCategory(guild: Guild, config: FSCategoryConfig, perms: { [
 }
 
 async function createChannel(guild: Guild, config: FSChannelConfig, parentId?: string) {
-  const parsedPerms = config.permissions?parseSchemaPermissions(config.permissions,guild):[]
+  const parsedPerms = config.permissions ? parseSchemaPermissions(config.permissions, guild) : []
 
   let type = 0
   switch (config.type) {

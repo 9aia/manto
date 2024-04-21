@@ -1,16 +1,15 @@
 import fs from "node:fs"
 import path from "node:path"
 import yaml from "yaml"
+import type { CategoryChannel, Guild } from "discord.js"
 import { InactiveUserTimeout } from "./interfaces/FSGuild"
 import { createCategory, createChannel } from "./Creator"
-import type { CategoryChannel, Guild } from "discord.js"
 import type { FSCategoryConfig } from "./interfaces/FSCategory"
 import type { FSChannelConfig } from "./interfaces/FSChannel"
 import type { FSRoleConfig } from "./interfaces/FSRole"
 import type { FSGuildConfig } from "./interfaces/FSGuild"
 
 async function parseFS(guild: Guild, serverDir: string) {
-
   const channelsDir = path.resolve(serverDir, "channels")
 
   const rolesDir = path.resolve(serverDir, "roles")
@@ -33,7 +32,6 @@ async function parseFS(guild: Guild, serverDir: string) {
   }
 
   // Create Channels and Categories
-
 
   await createChannelsFromGroup(guild, channelsDir)
 
@@ -71,7 +69,7 @@ async function createChannelsFromGroup(guild: Guild, dirPath: string, outerParen
   // load _perms.yml if exists
   if (fs.existsSync(_permsPath)) {
     const loadedPerm = yaml.parse(fs.readFileSync(_permsPath, "utf-8"))
-    perms = {...perms,...loadedPerm}
+    perms = { ...perms, ...loadedPerm }
   }
 
   const isCategory = fs.existsSync(_categoryPath)
@@ -88,7 +86,7 @@ async function createChannelsFromGroup(guild: Guild, dirPath: string, outerParen
     parentId = createdCategoryChannel.id
   }
 
-  // inner files 
+  // inner files
   const iFileNames = fs.readdirSync(dirPath).filter(each => !each.startsWith("_"))
 
   for (const iFileName of iFileNames) {
@@ -97,7 +95,7 @@ async function createChannelsFromGroup(guild: Guild, dirPath: string, outerParen
     if (fs.statSync(channelFilePath).isDirectory()) {
       // this receives the current parentID
       // if inner channels of this inner dir not has a category file,
-      // it will receive the current parentID 
+      // it will receive the current parentID
       await createChannelsFromGroup(guild, channelFilePath, parentId, perms)
       continue
     }

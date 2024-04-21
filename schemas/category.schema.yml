@@ -5,4 +5,4 @@ properties:
     description: The name of the category.
 required:
   - category_name
-description: Defines a category for potentially organizing other entities. 
+description: Defines a category for potentially organizing other entities.

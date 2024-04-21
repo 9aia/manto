@@ -2,6 +2,7 @@ import fs from "node:fs"
 import { PermissionFlagsBits } from "discord.js"
 
 const tmpl = `type: object
+additionalProperties: false
 properties:`
 
 let content = tmpl
@@ -16,7 +17,7 @@ Object.keys(PermissionFlagsBits).forEach((key) => {
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  `
+`
   })
 })
 

@@ -6,826 +6,825 @@ properties:
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowCreateInstantInvite:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyCreateInstantInvite:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultKickMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowKickMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyKickMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultBanMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowBanMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyBanMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultAdministrator:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowAdministrator:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyAdministrator:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultManageChannels:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowManageChannels:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyManageChannels:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultManageGuild:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowManageGuild:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyManageGuild:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultAddReactions:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowAddReactions:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyAddReactions:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultViewAuditLog:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowViewAuditLog:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyViewAuditLog:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultPrioritySpeaker:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowPrioritySpeaker:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyPrioritySpeaker:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultStream:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowStream:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyStream:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultViewChannel:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowViewChannel:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyViewChannel:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultSendMessages:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowSendMessages:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenySendMessages:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultSendTTSMessages:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowSendTTSMessages:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenySendTTSMessages:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultManageMessages:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowManageMessages:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyManageMessages:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultEmbedLinks:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowEmbedLinks:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyEmbedLinks:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultAttachFiles:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowAttachFiles:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyAttachFiles:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultReadMessageHistory:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowReadMessageHistory:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyReadMessageHistory:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultMentionEveryone:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowMentionEveryone:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyMentionEveryone:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultUseExternalEmojis:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowUseExternalEmojis:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyUseExternalEmojis:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultViewGuildInsights:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowViewGuildInsights:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyViewGuildInsights:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultConnect:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowConnect:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyConnect:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultSpeak:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowSpeak:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenySpeak:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultMuteMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowMuteMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyMuteMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultDeafenMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowDeafenMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyDeafenMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultMoveMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowMoveMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyMoveMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultUseVAD:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowUseVAD:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyUseVAD:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultChangeNickname:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowChangeNickname:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyChangeNickname:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultManageNicknames:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowManageNicknames:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyManageNicknames:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultManageRoles:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowManageRoles:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyManageRoles:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultManageWebhooks:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowManageWebhooks:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyManageWebhooks:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultManageEmojisAndStickers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowManageEmojisAndStickers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyManageEmojisAndStickers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultManageGuildExpressions:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowManageGuildExpressions:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyManageGuildExpressions:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultUseApplicationCommands:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowUseApplicationCommands:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyUseApplicationCommands:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultRequestToSpeak:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowRequestToSpeak:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyRequestToSpeak:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultManageEvents:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowManageEvents:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyManageEvents:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultManageThreads:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowManageThreads:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyManageThreads:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultCreatePublicThreads:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowCreatePublicThreads:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyCreatePublicThreads:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultCreatePrivateThreads:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowCreatePrivateThreads:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyCreatePrivateThreads:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultUseExternalStickers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowUseExternalStickers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyUseExternalStickers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultSendMessagesInThreads:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowSendMessagesInThreads:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenySendMessagesInThreads:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultUseEmbeddedActivities:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowUseEmbeddedActivities:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyUseEmbeddedActivities:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultModerateMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowModerateMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyModerateMembers:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultViewCreatorMonetizationAnalytics:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowViewCreatorMonetizationAnalytics:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyViewCreatorMonetizationAnalytics:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultUseSoundboard:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowUseSoundboard:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyUseSoundboard:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultUseExternalSounds:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowUseExternalSounds:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenyUseExternalSounds:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DefaultSendVoiceMessages:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   AllowSendVoiceMessages:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
+
   DenySendVoiceMessages:
     type: array
     items:
       type: string
       description: A user mention or role name (e.g., "@everyone", "role_name").
-  
