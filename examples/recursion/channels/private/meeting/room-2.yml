@@ -1,0 +1,6 @@
+channel_name: Room 2
+topic: ""
+type: voice
+slow_mode: 5s
+age_restricted: false
+hide_threads_after: 1h

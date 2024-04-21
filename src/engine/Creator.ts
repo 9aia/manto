@@ -84,13 +84,19 @@ function parseSchemaPermissions(rawPerms: { [key: string]: string[] }, guild?: G
       return perm
     })
   }
-  const separated: any = {}
+  const separated: any = {
+
+  }
 
   const defaultPermissionModel = channelSchemaPermissions.reduce((acc, perm) => {
     const permKey = schemaToDiscordPermName(perm)
     acc[permKey] = false
     return acc
   }, {} as { [key: string]: boolean })
+
+  // this will not still here,
+  if (guild)
+    separated[guild.roles.everyone.id] = defaultPermissionModel
 
   // create a simple map like this { username1:{ perm1:true, perm2:true }}
   permslist.forEach((permissionLine) => {

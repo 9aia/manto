@@ -1,13 +1,13 @@
 import fs from "node:fs"
 import path from "node:path"
-import type { CategoryChannel, Guild } from "discord.js"
 import yaml from "yaml"
+import { InactiveUserTimeout } from "./interfaces/FSGuild"
+import { createCategory, createChannel } from "./Creator"
+import type { CategoryChannel, Guild } from "discord.js"
 import type { FSCategoryConfig } from "./interfaces/FSCategory"
 import type { FSChannelConfig } from "./interfaces/FSChannel"
-import { createCategory, createChannel } from "./Creator"
 import type { FSRoleConfig } from "./interfaces/FSRole"
 import type { FSGuildConfig } from "./interfaces/FSGuild"
-import { InactiveUserTimeout } from "./interfaces/FSGuild"
 
 async function parseFS(guild: Guild, serverDir: string) {
 
@@ -17,7 +17,6 @@ async function parseFS(guild: Guild, serverDir: string) {
 
   const serverFile = path.resolve(serverDir, "server.yml")
 
-  const channelsScan = fs.readdirSync(channelsDir).map(fileName => path.resolve(channelsDir, fileName))
   const rolesScan = fs.readdirSync(rolesDir).map(fileName => path.resolve(rolesDir, fileName))
 
   // Create Roles
@@ -34,18 +33,9 @@ async function parseFS(guild: Guild, serverDir: string) {
   }
 
   // Create Channels and Categories
-  for (const channelPath of channelsScan) {
-    const stat = fs.lstatSync(channelPath)
 
-    // if is directory = GROUP of channels
-    if (stat.isDirectory()) {
-      await createChannelsFromGroup(guild, channelPath)
-    }
-    else {
-      const config: FSChannelConfig = yaml.parse(fs.readFileSync(channelPath, "utf8"))
-      await createChannel(guild, config)
-    }
-  }
+
+  await createChannelsFromGroup(guild, channelsDir)
 
   const serverConfig: FSGuildConfig = yaml.parse(fs.readFileSync(serverFile, "utf8"))
 
@@ -72,20 +62,23 @@ async function parseFS(guild: Guild, serverDir: string) {
   // send welcome message
 }
 
-async function createChannelsFromGroup(guild: Guild, dirPath: string) {
+async function createChannelsFromGroup(guild: Guild, dirPath: string, outerParentID?: string, outerPerms?: { [key: string]: string[] }) {
   const _categoryPath = path.resolve(dirPath, "_category.yml")
   const _permsPath = path.resolve(dirPath, "_perms.yml")
 
-  let perms: { [key: string]: string[] } = {}
+  let perms: { [key: string]: string[] } = outerPerms ?? {}
 
   // load _perms.yml if exists
-  if (fs.existsSync(_permsPath))
-    perms = yaml.parse(fs.readFileSync(_permsPath, "utf-8"))
+  if (fs.existsSync(_permsPath)) {
+    const loadedPerm = yaml.parse(fs.readFileSync(_permsPath, "utf-8"))
+    perms = {...perms,...loadedPerm}
+  }
 
   const isCategory = fs.existsSync(_categoryPath)
 
   // this will receive a category channel id if this group is has _category.yml
-  let parentId: string | undefined
+  // this nows receive the oldParentID for recursion
+  let parentId: string | undefined = outerParentID
 
   if (isCategory) {
     // Creates a category channel and puts the id in parentID variable
@@ -95,17 +88,27 @@ async function createChannelsFromGroup(guild: Guild, dirPath: string) {
     parentId = createdCategoryChannel.id
   }
 
-  const scanInnerChannelsConfig = fs.readdirSync(dirPath).filter(each => !each.startsWith("_"))
+  // inner files 
+  const iFileNames = fs.readdirSync(dirPath).filter(each => !each.startsWith("_"))
 
-  for (const channelConfigFilename of scanInnerChannelsConfig) {
-    const channelFilePath = path.resolve(dirPath, channelConfigFilename)
+  for (const iFileName of iFileNames) {
+    const channelFilePath = path.resolve(dirPath, iFileName)
+
+    if (fs.statSync(channelFilePath).isDirectory()) {
+      // this receives the current parentID
+      // if inner channels of this inner dir not has a category file,
+      // it will receive the current parentID 
+      await createChannelsFromGroup(guild, channelFilePath, parentId, perms)
+      continue
+    }
+
     const channelConfig: FSChannelConfig = yaml.parse(fs.readFileSync(channelFilePath, "utf-8"))
 
     // merge channel permissions with group permissions
     channelConfig.permissions = { ...channelConfig.permissions, ...perms }
 
     // parentID is optional
-    createChannel(guild, channelConfig, parentId)
+    await createChannel(guild, channelConfig, parentId)
   }
 }
 

