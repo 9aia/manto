@@ -26,7 +26,8 @@
     "build": "echo \"Error: no build specified\" && exit 1",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "release": "release-it"
+    "release": "release-it",
+    "schema:perms": "bun ./scripts/generate-perms-schema"
   },
   "dependencies": {
     "discord.js": "^14.14.1",
