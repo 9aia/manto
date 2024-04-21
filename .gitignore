@@ -1,6 +1,5 @@
 data
 node_modules
-server
 test.*
 *.conf
 templates

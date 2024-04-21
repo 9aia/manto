@@ -2,12 +2,11 @@ import fs from "node:fs"
 import path from "node:path"
 import yaml from "yaml"
 import type { CategoryChannel, Guild } from "discord.js"
-import { InactiveUserTimeout } from "./interfaces/FSGuild"
-import { createCategory, createChannel } from "./Creator"
-import type { FSCategoryConfig } from "./interfaces/FSCategory"
-import type { FSChannelConfig } from "./interfaces/FSChannel"
-import type { FSRoleConfig } from "./interfaces/FSRole"
-import type { FSGuildConfig } from "./interfaces/FSGuild"
+import { InactiveUserTimeout } from "../server/types"
+import { createCategory, createChannel } from "../channels/services"
+import type { FSCategoryConfig, FSChannelConfig } from "../channels/types.d"
+import type { FSRoleConfig } from "../roles/types.d"
+import type { FSGuildConfig } from "../server/types"
 
 async function parseFS(guild: Guild, serverDir: string) {
   const channelsDir = path.resolve(serverDir, "channels")

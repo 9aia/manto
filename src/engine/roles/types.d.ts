@@ -1,6 +1,6 @@
 import type { ColorResolvable, PermissionResolvable } from "discord.js"
 
-interface FSRoleConfig {
+export interface FSRoleConfig {
   name: string
   color: ColorResolvable
   icon_url?: string
@@ -8,5 +8,3 @@ interface FSRoleConfig {
   allow_mention: boolean
   permissions?: PermissionResolvable
 }
-
-export { FSRoleConfig }

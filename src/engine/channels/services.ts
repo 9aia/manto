@@ -1,9 +1,8 @@
 import type { CategoryChannel, Guild } from "discord.js"
-import type { FSCategoryConfig } from "./interfaces/FSCategory"
-import type { FSChannelConfig } from "./interfaces/FSChannel"
-import { parseSchemaPermissions } from "./permissionParser"
+import { parseSchemaPermissions } from "../perms/utils"
+import type { FSCategoryConfig, FSChannelConfig } from "./types.d"
 
-async function createCategory(guild: Guild, config: FSCategoryConfig, perms: { [key: string]: string[] }) {
+export async function createCategory(guild: Guild, config: FSCategoryConfig, perms: { [key: string]: string[] }) {
   const parsedPerms = perms ? parseSchemaPermissions(perms, guild) : []
 
   const c = await guild.channels.create({
@@ -20,7 +19,7 @@ async function createCategory(guild: Guild, config: FSCategoryConfig, perms: { [
   return c
 }
 
-async function createChannel(guild: Guild, config: FSChannelConfig, parentId?: string) {
+export async function createChannel(guild: Guild, config: FSChannelConfig, parentId?: string) {
   const parsedPerms = config.permissions ? parseSchemaPermissions(config.permissions, guild) : []
 
   let type = 0
@@ -48,13 +47,4 @@ async function createChannel(guild: Guild, config: FSChannelConfig, parentId?: s
   }
 
   return c
-  //
 }
-
-/**
- * Parse permissions of a yaml configuration file in a usable mode for Discord.js
- * If a guild is in args, this will switch the name for the role id in mentioned roles
- */
-
-export { createCategory, createChannel }
-export default { createCategory, createChannel }

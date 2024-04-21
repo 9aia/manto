@@ -1,14 +1,34 @@
-import type { Guild, PermissionFlags } from "discord.js"
+import type { Guild } from "discord.js"
+import type { ParsedPermission, SchemaPermissions } from "./types.d"
 
-type DiscordPerms = keyof PermissionFlags
-type SchemaPermissions = `Deny${DiscordPerms}` | `Allow${DiscordPerms}` | `Default${DiscordPerms}`
-
-interface ParsedPermission {
-  target: string
-  perms: Partial<Record<SchemaPermissions, boolean>>
+interface NormalizedPerm {
+  name: string
+  value: boolean | undefined
 }
 
-function parseSchemaPermissions(rawPerms: { [key: string]: string[] }, guild?: Guild): ParsedPermission[] {
+export function normalizePerm(perm: SchemaPermissions): NormalizedPerm {
+  const regxp = /(Allow|Deny|Default)(\w+)/
+  const match = perm.match(regxp)
+
+  if (!match)
+    return { name: perm } as NormalizedPerm
+
+  const [_, value, name] = match
+
+  switch (value) {
+    case "Allow":
+      return { name, value: true }
+    case "Deny":
+      return { name, value: false }
+    default:
+      return { name, value: undefined }
+  }
+}
+
+export function parseSchemaPermissions(
+  rawPerms: { [key: string]: string[] },
+  guild?: Guild,
+): ParsedPermission[] {
   let permslist = Object.entries(rawPerms) as ([SchemaPermissions, string[]])[]
 
   if (guild) {
@@ -46,7 +66,7 @@ function parseSchemaPermissions(rawPerms: { [key: string]: string[] }, guild?: G
       if (!separated[target])
         separated[target] = {}
 
-      const perm = abstPerm(permissionLine[0])
+      const perm = normalizePerm(permissionLine[0])
       if (perm === undefined)
         return
 
@@ -64,25 +84,3 @@ function parseSchemaPermissions(rawPerms: { [key: string]: string[] }, guild?: G
 
   return result
 }
-
-/** Return the perm name and if it's true or false based in the input string */
-function abstPerm(perm: SchemaPermissions): { name: string, value?: boolean } {
-  const regxp = /(Allow|Deny|Default)(\w+)/
-  const match = perm.match(regxp)
-
-  if (!match)
-    return { name: perm }
-  const [_, value, name] = match
-
-  switch (value) {
-    case "Allow":
-      return { name, value: true }
-    case "Deny":
-      return { name, value: false }
-    default:
-      return { name, value: undefined }
-  }
-}
-
-export { parseSchemaPermissions }
-export type { SchemaPermissions, ParsedPermission }
