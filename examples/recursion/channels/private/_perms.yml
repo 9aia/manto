@@ -1,4 +1,4 @@
-view_channel: [ "mod"]
-send_messages: ["mod"]
-connect: ["mod"]
-speak: ["mod"]
+DenyViewChannel: ["@everyone"]
+DenySendMessages: ["@everyone"]
+DenyConnect: ["@everyone"]
+DenySpeak: ["@everyone"]

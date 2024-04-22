@@ -1,5 +1,6 @@
-import fs from 'fs'
-import path from "path"
+import fs from "node:fs"
+import path from "node:path"
+
 const templatesPath = path.resolve("./templates")
 
 function configureAmbient() {
@@ -7,4 +8,4 @@ function configureAmbient() {
     fs.mkdirSync(templatesPath, { recursive: true })
 }
 
-export {configureAmbient,templatesPath}
+export { configureAmbient, templatesPath }

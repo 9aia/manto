@@ -5,17 +5,13 @@ import { Client, Collection, GatewayIntentBits, REST } from "discord.js"
 import loadCommands from "../lib/discord/slash-commands/loadCommands"
 import deployCommands from "../lib/discord/slash-commands/deployCommands"
 import handleCommands from "../lib/discord/slash-commands/handleCommands"
-import { engineHandler } from "./commands"
-import { configureAmbient } from "./engine/ambient"
+import { configureAmbient } from "./engine/config/ambient"
 
 export const rest = new REST().setToken(process.env.DISCORD_TOKEN!)
 export const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.DirectMessages,
-    GatewayIntentBits.GuildVoiceStates,
   ],
 })
 client.commands = new Collection()
@@ -34,7 +30,6 @@ client.on("error", (err) => {
   console.error("Error\n", err)
 })
 
-engineHandler(client)
 configureAmbient()
 
 client.login(process.env.DISCORD_TOKEN)

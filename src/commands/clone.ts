@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs"
 import { SlashCommandBuilder } from "discord.js"
-import { parseFS } from "../engine/FSParser"
+import { parseFS } from "../engine/config/FSParser"
 import type { ExecuteFn } from "../../lib/discord/slash-commands/types"
 
 export const data = new SlashCommandBuilder()

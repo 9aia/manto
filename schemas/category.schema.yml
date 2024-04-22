@@ -1,3 +1,4 @@
+additionalProperties: false
 properties:
   category_name:
     type: string
