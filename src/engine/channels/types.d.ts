@@ -1,3 +1,5 @@
+import type { FSPermissionConfig } from "../perms/types"
+
 export interface FSCategoryConfig {
   category_name: string
 }
@@ -10,7 +12,7 @@ export interface FSChannelConfig {
   channel_name: string
   type: ChannelType
   category?: string
-  permissions?: { [key: string]: string[] }
+  permissions?: FSPermissionConfig
   topic?: string
   slow_mode: SlowModeString
   age_restricted: boolean

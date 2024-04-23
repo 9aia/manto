@@ -7,6 +7,7 @@ import { createCategory, createChannel } from "../channels/services"
 import type { FSCategoryConfig, FSChannelConfig } from "../channels/types.d"
 import type { FSRoleConfig } from "../roles/types.d"
 import type { FSGuildConfig } from "../server/types"
+import type { FSPermissionConfig } from "../perms/types"
 
 async function parseFS(guild: Guild, serverDir: string) {
   const channelsDir = path.resolve(serverDir, "channels")
@@ -59,11 +60,11 @@ async function parseFS(guild: Guild, serverDir: string) {
   // send welcome message
 }
 
-async function createChannelsFromGroup(guild: Guild, dirPath: string, outerParentID?: string, outerPerms?: { [key: string]: string[] }) {
+async function createChannelsFromGroup(guild: Guild, dirPath: string, outerParentID?: string, outerPerms?: FSPermissionConfig) {
   const _categoryPath = path.resolve(dirPath, "_category.yml")
   const _permsPath = path.resolve(dirPath, "_perms.yml")
 
-  let perms: { [key: string]: string[] } = outerPerms ?? {}
+  let perms: FSPermissionConfig = outerPerms ?? {}
 
   // load _perms.yml if exists
   if (fs.existsSync(_permsPath)) {

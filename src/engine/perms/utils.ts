@@ -1,5 +1,5 @@
 import type { Guild } from "discord.js"
-import type { ParsedPermission, SchemaPermissions } from "./types.d"
+import type { FSPermissionConfig, ParsedPermission, SchemaPermissions } from "./types.d"
 
 interface NormalizedPerm {
   name: string
@@ -26,7 +26,7 @@ export function normalizePerm(perm: SchemaPermissions): NormalizedPerm {
 }
 
 export function parseSchemaPermissions(
-  rawPerms: { [key: string]: string[] },
+  rawPerms: FSPermissionConfig,
   guild?: Guild,
 ): ParsedPermission[] {
   let permslist = Object.entries(rawPerms) as ([SchemaPermissions, string[]])[]

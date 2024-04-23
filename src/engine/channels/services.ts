@@ -1,8 +1,9 @@
 import type { CategoryChannel, Guild } from "discord.js"
 import { parseSchemaPermissions } from "../perms/utils"
+import type { FSPermissionConfig } from "../perms/types"
 import type { FSCategoryConfig, FSChannelConfig } from "./types.d"
 
-export async function createCategory(guild: Guild, config: FSCategoryConfig, perms: { [key: string]: string[] }) {
+export async function createCategory(guild: Guild, config: FSCategoryConfig, perms: FSPermissionConfig) {
   const parsedPerms = perms ? parseSchemaPermissions(perms, guild) : []
 
   const c = await guild.channels.create({
