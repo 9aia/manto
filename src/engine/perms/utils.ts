@@ -40,7 +40,7 @@ export function parseSchemaPermissions(
     })
 
     permslist = permslist.map((perm) => {
-      perm[1] = perm[1].map((roleCitated) => {
+      const targets: (string | null)[] = perm[1].map((roleCitated) => {
         // try to catch any role with the role citated in the config file _perms
         let catched = guildRoles.filter(guildRole => guildRole.name === roleCitated)[0]
         if (catched)
@@ -52,8 +52,13 @@ export function parseSchemaPermissions(
           return catched.id
 
         // not catched anyone
-        return roleCitated
+        return null
       })
+
+      // remove null from the array
+      // the null is role or user that not appears in the guild
+      perm[1] = targets.filter(target => target != null) as string[]
+
       return perm
     })
   }
