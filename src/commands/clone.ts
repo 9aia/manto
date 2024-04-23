@@ -1,7 +1,9 @@
 import { existsSync } from "node:fs"
+import path from "node:path"
 import { SlashCommandBuilder } from "discord.js"
 import { parseFS } from "../engine/config/FSParser"
 import type { ExecuteFn } from "../../lib/discord/slash-commands/types"
+import { templatesPath } from "../engine/config/ambient"
 
 export const data = new SlashCommandBuilder()
   .setName("clone")
@@ -13,9 +15,9 @@ export const data = new SlashCommandBuilder()
   )
 
 export const execute: ExecuteFn = async (inter) => {
-  const templateName = inter.options.getString("template-name")
+  const templateName = inter.options.getString("template-name") as string
 
-  const templatePath = `./templates/${templateName}`
+  const templatePath = path.join(templatesPath, templateName)
 
   if (!existsSync(templatePath)) {
     await inter.reply({ content: `Template not found: ${templateName}`, ephemeral: true })
