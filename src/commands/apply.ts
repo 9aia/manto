@@ -6,8 +6,8 @@ import { templatesPath } from "../engine/config/ambient"
 import { applyConfig } from "../engine/config/apply"
 
 export const data = new SlashCommandBuilder()
-  .setName("clone")
-  .setDescription("Clone a server.")
+  .setName("apply")
+  .setDescription("Update the server settings based on a template.")
   .addStringOption(o => o
     .setName("template-name")
     .setDescription("Template name to be used.")
@@ -29,9 +29,9 @@ export const execute: ExecuteFn = async (inter) => {
     return
   }
 
-  await inter.reply({ content: `Cloning from \`${templateName}\`.`, ephemeral: true })
+  await inter.reply({ content: `Updating server settings based on \`${templateName}\`.`, ephemeral: true })
 
   await applyConfig(inter.guild, templatePath)
 
-  await inter.editReply({ content: `Cloning complete.` })
+  await inter.editReply({ content: `Server settings have been updated.` })
 }
