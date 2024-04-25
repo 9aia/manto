@@ -7,4 +7,5 @@ export interface FSRoleConfig {
   separate_from_online: boolean
   allow_mention: boolean
   permissions?: PermissionResolvable
+  file_path?: string
 }
