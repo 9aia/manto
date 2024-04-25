@@ -1,9 +1,9 @@
 import { existsSync } from "node:fs"
 import path from "node:path"
 import { SlashCommandBuilder } from "discord.js"
-import { parseFS } from "../engine/config/FSParser"
 import type { ExecuteFn } from "../../lib/discord/slash-commands/types"
 import { templatesPath } from "../engine/config/ambient"
+import { applyConfig } from "../engine/config/apply"
 
 export const data = new SlashCommandBuilder()
   .setName("clone")
@@ -31,7 +31,7 @@ export const execute: ExecuteFn = async (inter) => {
 
   await inter.reply({ content: `Cloning from \`${templateName}\`.`, ephemeral: true })
 
-  await parseFS(inter.guild, templatePath)
+  await applyConfig(inter.guild, templatePath)
 
   await inter.editReply({ content: `Cloning complete.` })
 }
