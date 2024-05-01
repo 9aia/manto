@@ -5,3 +5,4 @@ test.*
 templates
 .gitignore
 .env
+.manto
