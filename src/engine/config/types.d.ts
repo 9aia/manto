@@ -19,3 +19,10 @@ export interface FsRes {
   data: any
   lastMeta: any
 }
+
+export interface MantoSignals {
+  guild: Record<string, Signal>
+  isLoaded: boolean
+}
+
+export type MantoEffect = (guild: Guild) => void
