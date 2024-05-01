@@ -8,4 +8,5 @@ export interface FSRoleConfig {
   allow_mention: boolean
   permissions?: PermissionResolvable
   file_path?: string
+  discordId?: string
 }
