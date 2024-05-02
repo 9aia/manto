@@ -2,6 +2,7 @@ import process from "node:process"
 import { effect, signal } from "@preact/signals-core"
 import type { Guild } from "discord.js"
 import { InactiveUserTimeout } from "../server/types"
+import { CONFIG_GUILD_KEYS, CONFIG_ROLE_KEYS } from "./constants"
 import type { MantoConfig, MantoEffects, MantoSignals } from "./types"
 
 export const signals: MantoSignals = {
@@ -13,58 +14,57 @@ export const signals: MantoSignals = {
 export const effects: MantoEffects = {
   guild: {
     server_name: (guild) => {
-      guild.setName(signals.guild.server_name.value)
+      guild.setName(signals.guild.server_name?.value)
     },
     logo_url: (guild) => {
-      guild.setIcon(signals.guild.logo_url.value)
+      guild.setIcon(signals.guild.logo_url?.value ?? null)
     },
     server_banner_background_url: (guild) => {
-      guild.setBanner(signals.guild.server_banner_background_url.value ?? null)
+      guild.setBanner(signals.guild.server_banner_background_url?.value ?? null)
     },
     default_notifications: (guild) => {
-      guild.setDefaultMessageNotifications(signals.guild.default_notifications.value === "all_messages" ? 0 : 1)
+      guild.setDefaultMessageNotifications(signals.guild.default_notifications?.value === "all_messages" ? 0 : 1)
     },
     show_boost_progress_bar: (guild) => {
-      guild.setPremiumProgressBarEnabled(signals.guild.show_boost_progress_bar.value)
+      guild.setPremiumProgressBarEnabled(signals.guild.show_boost_progress_bar?.value || false)
     },
     inactive_timeout: (guild) => {
-      const timeout = (signals.guild.inactive_timeout.value as string) ?? "5min"
+      const timeout = (signals.guild.inactive_timeout?.value as string) ?? "5min"
       guild.setAFKTimeout((InactiveUserTimeout[timeout as any]) as any)
     },
     system_messages_channel: (guild) => {
-      const systemReferenciedChannel = guild.channels.cache.filter(((ch: any) => ch.name === signals.guild!.system_messages_channel.value?.toLowerCase().replace(" ", "-") && ch.type === 0)).at(0)
+      const systemReferenciedChannel = guild.channels.cache.filter(((ch: any) => ch.name === signals.guild.system_messages_channel?.value?.toLowerCase().replace(" ", "-") && ch.type === 0)).at(0)
       guild.setSystemChannel(systemReferenciedChannel?.id ?? null)
     },
     inactive_channel: (guild) => {
-      const afkReferenciedChannel = guild.channels.cache.filter(((ch: any) => ch.name === signals.guild!.inactive_channel.value)).at(0)
+      const afkReferenciedChannel = guild.channels.cache.filter(((ch: any) => ch.name === signals.guild!.inactive_channel?.value)).at(0)
       guild.setAFKChannel(afkReferenciedChannel?.id ?? null)
     },
   },
   roles: {
     name: (role, configSignals) => {
       const name = configSignals?.name?.value
-      role.setName(JSON.parse(name))
+      role.setName(name && JSON.parse(name))
     },
     color: (role, configSignals) => {
       const color = configSignals?.color?.value
-      role.setColor(JSON.parse(color))
+      role.setColor(color && JSON.parse(color))
     },
     icon_url: (role, configSignals) => {
       const iconUrl = configSignals?.icon_url?.value
-      role.setIcon(JSON.parse(iconUrl))
+      role.setIcon(iconUrl ? JSON.parse(iconUrl) : null)
     },
     allow_mention: (role, configSignals) => {
       const allow_mention = configSignals?.allow_mention?.value
-      role.setMentionable(JSON.parse(allow_mention))
+      role.setMentionable(allow_mention ? JSON.parse(allow_mention) : false)
     },
     permissions: (role, configSignals) => {
-      const permissionsString = configSignals?.permissions?.value
-      const permissions = JSON.parse(permissionsString)
-      role.setPermissions(permissions)
+      const permissions = configSignals?.permissions?.value
+      role.setPermissions(permissions ? JSON.parse(permissions) : [])
     },
     separate_from_online: (role, configSignals) => {
       const separate_from_online = configSignals?.separate_from_online?.value
-      role.setHoist(JSON.parse(separate_from_online))
+      role.setHoist(separate_from_online ? JSON.parse(separate_from_online) : false)
     },
   },
 }
@@ -74,7 +74,7 @@ export async function loadConfig(guild: Guild, config: MantoConfig) {
     if (config.guild) {
       const values = config.guild as any
 
-      for (const key of Object.keys(values)) {
+      for (const key of CONFIG_GUILD_KEYS) {
         if (!signals.guild[key])
           signals.guild[key] = signal(values[key])
         else
@@ -98,7 +98,7 @@ export async function loadConfig(guild: Guild, config: MantoConfig) {
       const role = { ..._role }
       delete role.file_path
 
-      for (const key of Object.keys(role)) {
+      for (const key of CONFIG_ROLE_KEYS) {
         const dRoleId = role.discordId!
 
         if (!dRoleId)
