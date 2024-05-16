@@ -4,7 +4,7 @@ import yaml from "yaml"
 import { basename } from "discord.js"
 import type { FSCategoryConfig, FSChannelConfig } from "../channels/types"
 import type { FSGuildConfig } from "../server/types"
-import type { FSRoleConfig } from "../roles/types"
+import type { MantoRole } from "../roles/types"
 import type { ChannelMeta, FsRes, RoleMeta } from "./types.d"
 import { MetaType } from "./types.d"
 
@@ -55,7 +55,7 @@ function readReses<M extends object>(
 }
 
 export function readConfig(folderPath: string) {
-  const roles: FSRoleConfig[] = []
+  const roles: MantoRole[] = []
   const channels: FSChannelConfig[] = []
   const categories: FSCategoryConfig[] = []
 
@@ -74,10 +74,7 @@ export function readConfig(folderPath: string) {
     const filePath = path.join(folderPath, base)
     const data = yaml.parse(fs.readFileSync(filePath, "utf-8"))
 
-    return {
-      ...data,
-      file_path: filePath,
-    }
+    return data
   }
 
   const readRoles = (dirPath: string) => {
@@ -85,7 +82,7 @@ export function readConfig(folderPath: string) {
       if (res.isMeta)
         return
 
-      roles.push({ ...res.data, file_path: res.filePath })
+      roles.push({ id: res.filePath, ...res.data })
     })
   }
 
@@ -105,8 +102,8 @@ export function readConfig(folderPath: string) {
 
         if (base === (`${MetaType.CATEGORY}.yml`) || base === (`${MetaType.CATEGORY}.yaml`)) {
           categories.push({
+            id: res.filePath,
             ...res.data,
-            file_path: res.filePath,
           })
         }
       },
@@ -114,10 +111,10 @@ export function readConfig(folderPath: string) {
 
     channels.push(...dirChannels.map((channel) => {
       return {
+        id: channel.filePath,
         category: channel.lastMeta.category_name,
         permissions: channel.lastMeta.perms,
         ...channel.data,
-        file_path: channel.filePath,
       }
     }))
   }

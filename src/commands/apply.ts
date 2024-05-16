@@ -1,11 +1,11 @@
-import fs, { existsSync } from "node:fs"
+import { existsSync } from "node:fs"
 import path from "node:path"
 import { SlashCommandBuilder } from "discord.js"
 import type { ExecuteFn } from "../../lib/discord/slash-commands/types"
 import { templatesPath } from "../engine/config/ambient"
 import { loadConfig } from "../engine/config/load"
 import { readConfig } from "../engine/config/reader"
-import { replaceExtname, saveMantoFile } from "../engine/config/utils"
+import { saveManto } from "../engine/config/save"
 
 export const data = new SlashCommandBuilder()
   .setName("apply")
@@ -19,9 +19,9 @@ export const data = new SlashCommandBuilder()
 export const execute: ExecuteFn = async (inter) => {
   const templateName = inter.options.getString("template-name") as string
 
-  const templatePath = path.join(templatesPath, templateName)
+  const rootDir = path.join(templatesPath, templateName)
 
-  if (!existsSync(templatePath)) {
+  if (!existsSync(rootDir)) {
     await inter.reply({ content: `Template not found: ${templateName}`, ephemeral: true })
     return
   }
@@ -33,47 +33,9 @@ export const execute: ExecuteFn = async (inter) => {
 
   await inter.reply({ content: `Updating server settings based on \`${templateName}\`.`, ephemeral: true })
 
-  const config = readConfig(templatePath)
+  const config = readConfig(rootDir)
 
-  // #region Save changes and discord ids on storage
-
-  if (config.guild)
-    saveMantoFile(templatePath, config.guild)
-
-  for (const role of config.roles) {
-    if (!role.file_path)
-      continue
-
-    let roleManto = {} as any
-
-    const roleFilePath = replaceExtname(path.join(templatePath, ".manto", role.file_path), "json")
-
-    if (fs.existsSync(roleFilePath)) {
-      const data = fs.readFileSync(roleFilePath, { encoding: "utf-8" })
-      roleManto = JSON.parse(data)
-    }
-
-    if (!roleManto.discordId) {
-      const r = await inter.guild.roles.create({
-        name: role.name,
-        color: role.color,
-        icon: role.icon_url,
-        mentionable: role.allow_mention,
-        permissions: role.permissions,
-        hoist: role.separate_from_online,
-      })
-
-      role.discordId = r.id
-    }
-    else {
-      role.discordId = roleManto.discordId
-    }
-
-    saveMantoFile(templatePath, role)
-  }
-
-  // #endregion
-
+  await saveManto(inter.guild, config, { rootDir })
   await loadConfig(inter.guild, config)
 
   await inter.editReply({ content: `Server settings have been updated.` })

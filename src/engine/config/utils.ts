@@ -8,22 +8,28 @@ export function replaceExtname(filePath: string, newExtension: string) {
   return newFilePath
 }
 
-export interface MantoFileData {
-  file_path?: string
-  id?: string
-}
-
-export function saveMantoFile<T extends MantoFileData>(
-  templateDir: string,
+export function saveMantoFile<T extends object>(
+  rootDir: string,
+  name: string,
   data: T,
 ) {
-  if (!data.file_path)
-    return
-
-  const mantoPath = path.join(templateDir, ".manto", data.file_path!)
+  const mantoPath = path.join(rootDir, ".manto", name)
 
   if (!fs.existsSync(path.dirname(mantoPath)))
     fs.mkdirSync(path.dirname(mantoPath), { recursive: true })
 
   fs.writeFileSync(replaceExtname(mantoPath, "json"), JSON.stringify(data))
+}
+
+export function readMantoFile<T extends object>(rootDir: string, name: string) {
+  let data = {} as T
+
+  const roleFilePath = replaceExtname(path.join(rootDir, ".manto", name), "json")
+
+  if (fs.existsSync(roleFilePath)) {
+    const content = fs.readFileSync(roleFilePath, { encoding: "utf-8" })
+    data = JSON.parse(content)
+  }
+
+  return data
 }

@@ -2,12 +2,13 @@ import process from "node:process"
 import { effect, signal } from "@preact/signals-core"
 import type { Guild } from "discord.js"
 import { InactiveUserTimeout } from "../server/types"
-import { CONFIG_GUILD_KEYS, CONFIG_ROLE_KEYS } from "./constants"
+import { CONFIG_CATEGORY_KEYS, CONFIG_GUILD_KEYS, CONFIG_ROLE_KEYS } from "./constants"
 import type { MantoConfig, MantoEffects, MantoSignals } from "./types"
 
 export const signals: MantoSignals = {
   guild: {},
   roles: {},
+  categories: {},
   isLoaded: false,
 }
 
@@ -67,6 +68,12 @@ export const effects: MantoEffects = {
       role.setHoist(separate_from_online ? JSON.parse(separate_from_online) : false)
     },
   },
+  categories: {
+    category_name: (category, configSignals) => {
+      const name = configSignals?.category_name?.value
+      category.setName(name && JSON.parse(name))
+    },
+  },
 }
 
 export async function loadConfig(guild: Guild, config: MantoConfig) {
@@ -87,17 +94,16 @@ export async function loadConfig(guild: Guild, config: MantoConfig) {
 
     Object.keys(effects.guild).forEach((key) => {
       effect(() => {
-        process.env.NODE_ENV && console.log("[MANTO] Updating guild ", key)
+        const data = signals.guild
         effects.guild[key]?.(guild)
+
+        process.env.NODE_ENV && console.log("[MANTO] Updated guild ", key, "to", data[key].value)
       })
     })
   }
 
   const loadRoles = async () => {
-    config.roles.forEach(async (_role) => {
-      const role = { ..._role }
-      delete role.file_path
-
+    config.roles.forEach(async (role) => {
       for (const key of CONFIG_ROLE_KEYS) {
         const dRoleId = role.discordId!
 
@@ -123,9 +129,47 @@ export async function loadConfig(guild: Guild, config: MantoConfig) {
           continue
 
         effect(() => {
-          process.env.NODE_ENV && console.log("[MANTO] Updating role ", dRoleId, key)
           const data = signals.roles[dRole.id]
           effects.roles[key]?.(dRole, data)
+
+          process.env.NODE_ENV && console.log("[MANTO] Updated role ", dRoleId, key, "to", data[key].value)
+        })
+      }
+    })
+  }
+
+  const loadCategories = async () => {
+    config.categories.forEach(async (category) => {
+      for (const key of CONFIG_CATEGORY_KEYS) {
+        const dCategoryId = category.discordId!
+
+        if (!dCategoryId)
+          continue
+
+        if (!signals.categories[dCategoryId])
+          signals.categories[dCategoryId] = {}
+
+        const value = JSON.stringify((category as any)[key])
+
+        if (!signals.categories[dCategoryId][key])
+          signals.categories[dCategoryId][key] = signal(value)
+        else
+          signals.categories[dCategoryId][key].value = value
+
+        if (signals.isLoaded)
+          continue
+
+        const dCategory = guild.channels.cache.get(dCategoryId)
+
+        if (!dCategory)
+          continue
+
+        effect(() => {
+          const data = signals.categories[dCategory.id]
+
+          effects.categories[key]?.(dCategory, data)
+
+          process.env.NODE_ENV && console.log("[MANTO] Updated category ", dCategoryId, key, "to", data[key].value)
         })
       }
     })
@@ -133,9 +177,24 @@ export async function loadConfig(guild: Guild, config: MantoConfig) {
 
   try {
     loadGuild()
+  }
+  catch (e) {
+    console.error(e)
+  }
+
+  try {
     await loadRoles()
   }
-  finally {
-    signals.isLoaded = true
+  catch (e) {
+    console.error(e)
   }
+
+  try {
+    await loadCategories()
+  }
+  catch (e) {
+    console.error(e)
+  }
+
+  signals.isLoaded = true
 }

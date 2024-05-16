@@ -1,6 +1,7 @@
 export interface FSCategoryConfig {
   category_name: string
-  file_path?: string
+  id?: string
+  discordId?: string
 }
 
 export type SlowModeString = "off" | "5s" | "10s" | "15s" | "30s" | "1m" | "2m" | "5m" | "10m" | "15m" | "30m" | "1h" | "2h" | "6h"
@@ -16,5 +17,6 @@ export interface FSChannelConfig {
   slow_mode: SlowModeString
   age_restricted: boolean
   hide_threads_after?: HideThreadString
-  file_path?: string
+  id?: string
+  discordId?: string
 }
