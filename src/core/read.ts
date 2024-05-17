@@ -1,11 +1,8 @@
 import fs from "node:fs"
 import path from "node:path"
-import yaml from "yaml"
 import { basename } from "discord.js"
-import type { MantoCategory, MantoChannel } from "../channels/types"
-import type { FSGuildConfig } from "../server/types"
-import type { MantoRole } from "../roles/types"
-import type { ChannelMeta, FsRes, RoleMeta } from "./types.d"
+import yaml from "yaml"
+import type { ChannelMeta, FsRes, MantoCategory, MantoChannel, MantoConfig, MantoGuild, MantoRole, RoleMeta } from "./types"
 import { MetaType } from "./types.d"
 
 function readRes<M extends ChannelMeta | RoleMeta>(filePath: string, lastMeta: M) {
@@ -19,7 +16,7 @@ function readRes<M extends ChannelMeta | RoleMeta>(filePath: string, lastMeta: M
   const data: Readonly<any> = yaml.parse(fs.readFileSync(filePath, "utf-8"))
 
   if (base === (`${MetaType.CATEGORY}.yml`) || base === (`${MetaType.CATEGORY}.yaml`))
-    lastMeta.category_name = data.category_name
+    lastMeta.category_name = data.name
 
   if (base === (`${MetaType.PERMS}.yml`) || base === (`${MetaType.PERMS}.yaml`))
     lastMeta.perms = { ...lastMeta.perms, ...data }
@@ -54,12 +51,12 @@ function readReses<M extends object>(
   })
 }
 
-export function readConfig(folderPath: string) {
+export function readConfig(folderPath: string): MantoConfig {
   const roles: MantoRole[] = []
   const channels: MantoChannel[] = []
   const categories: MantoCategory[] = []
 
-  const readGuild = (folderPath: string): FSGuildConfig | null => {
+  const readGuild = (folderPath: string): MantoGuild | null => {
     let base
 
     if (fs.existsSync(path.join(folderPath, "server.yml")))

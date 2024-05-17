@@ -1,8 +1,8 @@
 additionalProperties: false
 properties:
-  category_name:
+  name:
     type: string
     description: The name of the category.
 required:
-  - category_name
+  - name
 description: Defines a category for potentially organizing other entities.

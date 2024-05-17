@@ -2,10 +2,10 @@ import { existsSync } from "node:fs"
 import path from "node:path"
 import { SlashCommandBuilder } from "discord.js"
 import type { ExecuteFn } from "../../lib/discord/slash-commands/types"
-import { templatesPath } from "../engine/config/ambient"
-import { loadConfig } from "../engine/config/load"
-import { readConfig } from "../engine/config/reader"
-import { saveManto } from "../engine/config/save"
+import { templatesPath } from "../core/ambient"
+import { applyConfig } from "../core/apply"
+import { readConfig } from "../core/read"
+import { transformConfig } from "../core/transform"
 
 export const data = new SlashCommandBuilder()
   .setName("apply")
@@ -34,9 +34,9 @@ export const execute: ExecuteFn = async (inter) => {
   await inter.reply({ content: `Updating server settings based on \`${templateName}\`.`, ephemeral: true })
 
   const config = readConfig(rootDir)
+  const aConfig = await transformConfig(inter.guild, config)
 
-  await saveManto(inter.guild, config, { rootDir })
-  await loadConfig(inter.guild, config)
+  await applyConfig(inter.guild, aConfig, { rootDir })
 
   await inter.editReply({ content: `Server settings have been updated.` })
 }

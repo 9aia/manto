@@ -1,7 +1,7 @@
 type: object
 additionalProperties: false
 properties:
-  channel_name:
+  name:
     type: string
     description: The desired name for the channel.
   category:
@@ -37,7 +37,7 @@ properties:
       - 1h
       - 2h
       - 6h
-  age_restricted:
+  nsfw:
     type: boolean
     description: Whether the channel is age-restricted (18+).
   hide_threads_after:
@@ -49,5 +49,5 @@ properties:
       - 3d
       - 1w
 required:
-  - channel_name
+  - name
 description: Defines a channel for a Discord server.

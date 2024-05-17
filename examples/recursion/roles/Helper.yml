@@ -1,5 +1,5 @@
 name: helper
 color: Blue
 icon_url: ""
-separate_from_online: true
-allow_mention: true
+hoist: true
+mentionable: true

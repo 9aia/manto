@@ -1,16 +1,16 @@
 type: object
 additionalProperties: false
 properties:
-  server_name:
+  name:
     type: string
     description: The name of the Discord server.
   logo_url:
     type: string
     description: (Optional) The URL for the server's logo.
-  inactive_channel:
+  afk_channel:
     type: string
     description: (Optional) The name of the channel to move inactive users to.
-  inactive_timeout:
+  afk_timeout:
     type: string
     description: The amount of time before an idle user is considered inactive.
     enum:
@@ -19,7 +19,7 @@ properties:
       - 15min
       - 30min
       - 1h
-  system_messages_channel:
+  system_channel:
     type: string
     description: The name of the channel to send system messages to.
   default_notifications:
@@ -28,12 +28,12 @@ properties:
     enum:
       - all_messages
       - only_mentions
-  show_boost_progress_bar:
+  enable_premium_progress_bar:
     type: boolean
     description: Whether to show the server boost progress bar.
-  server_banner_background_url:
+  banner_url:
     type: string
     description: (Optional) The URL for the server banner background image.
 required:
-  - server_name
+  - name
 description: Defines general settings for a Discord server.
