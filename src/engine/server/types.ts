@@ -20,5 +20,4 @@ export interface FSGuildConfig {
   show_boost_progress_bar?: boolean
   server_banner_background_url?: string
   // server_invite_background_url?: string
-  file_path?: string
 }

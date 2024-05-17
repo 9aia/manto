@@ -29,7 +29,11 @@ export function parseSchemaPermissions(
   rawPerms: { [key: string]: string[] },
   guild?: Guild,
 ): ParsedPermission[] {
+  if (!rawPerms)
+    return []
+
   let permslist = Object.entries(rawPerms) as ([SchemaPermissions, string[]])[]
+  console.log("raw:", permslist)
 
   if (guild) {
     const guildRoles = guild.roles.cache.map((role) => {
@@ -54,6 +58,7 @@ export function parseSchemaPermissions(
         // not catched anyone
         return roleCitated
       })
+
       return perm
     })
   }

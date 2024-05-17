@@ -1,8 +1,8 @@
 import type { CategoryChannel, Guild } from "discord.js"
 import { parseSchemaPermissions } from "../perms/utils"
-import type { FSCategoryConfig, FSChannelConfig } from "./types.d"
+import type { MantoCategory, MantoChannel } from "./types.d"
 
-export async function createCategory(guild: Guild, config: FSCategoryConfig, perms: { [key: string]: string[] }) {
+export async function createCategory(guild: Guild, config: MantoCategory, perms: { [key: string]: string[] }) {
   const parsedPerms = perms ? parseSchemaPermissions(perms, guild) : []
 
   const c = await guild.channels.create({
@@ -19,7 +19,7 @@ export async function createCategory(guild: Guild, config: FSCategoryConfig, per
   return c
 }
 
-export async function createChannel(guild: Guild, config: FSChannelConfig, parentId?: string) {
+export async function createChannel(guild: Guild, config: MantoChannel, parentId?: string) {
   const parsedPerms = config.permissions ? parseSchemaPermissions(config.permissions, guild) : []
 
   let type = 0

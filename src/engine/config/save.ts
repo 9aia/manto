@@ -1,6 +1,6 @@
 import type { Guild } from "discord.js"
 import type { MantoRole } from "../roles/types"
-import { createCategory } from "../channels/services"
+import { createCategory, createChannel } from "../channels/services"
 import type { MantoConfig, MantoOptions } from "./types"
 import { readMantoFile, saveMantoFile } from "./utils"
 
@@ -10,6 +10,7 @@ export async function saveManto(
   options?: MantoOptions,
 ) {
   const rootDir = options?.rootDir || "./"
+  const categoryIds: Record<string, string> = {}
 
   const saveGuild = () => {
     if (!config.guild)
@@ -56,13 +57,34 @@ export async function saveManto(
         const c = await createCategory(guild, category, perms)
 
         category.discordId = c.id
+        categoryIds[c.name] = c.id
       }
 
       saveMantoFile(rootDir, mantoFileName, category)
     }
   }
 
+  const saveChannels = async () => {
+    for (const channel of config.channels) {
+      const mantoFileName = `channels/${channel.id?.replaceAll("/", "-")}`
+      const oldMantoData = readMantoFile<MantoRole>(rootDir, mantoFileName)
+
+      if (oldMantoData.discordId) {
+        channel.discordId = oldMantoData.discordId
+      }
+      else {
+        const parentId = channel.category && categoryIds[channel.category]
+        const c = await createChannel(guild, channel, parentId)
+
+        channel.discordId = c.id
+      }
+
+      saveMantoFile(rootDir, mantoFileName, channel)
+    }
+  }
+
   saveGuild()
   await saveRoles()
   await saveCategories()
+  await saveChannels()
 }

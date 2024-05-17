@@ -1,6 +1,6 @@
 channel_name: Android
 permissions:
-  view_channel: ["@everyone"]
+  AllowViewChannel: ["@everyone"]
 topic: ""
 slow_mode: 5s
 age_restricted: false

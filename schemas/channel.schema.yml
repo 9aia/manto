@@ -4,6 +4,9 @@ properties:
   channel_name:
     type: string
     description: The desired name for the channel.
+  category:
+    type: string
+    description: The parent channel name for this channel.
   type:
     type: string
     description: The type of channel.

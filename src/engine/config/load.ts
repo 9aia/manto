@@ -2,13 +2,15 @@ import process from "node:process"
 import { effect, signal } from "@preact/signals-core"
 import type { Guild } from "discord.js"
 import { InactiveUserTimeout } from "../server/types"
-import { CONFIG_CATEGORY_KEYS, CONFIG_GUILD_KEYS, CONFIG_ROLE_KEYS } from "./constants"
+import { CONFIG_CATEGORY_KEYS, CONFIG_CHANNEL_KEYS, CONFIG_GUILD_KEYS, CONFIG_ROLE_KEYS } from "./constants"
 import type { MantoConfig, MantoEffects, MantoSignals } from "./types"
+import { getDiscordType, parseHideThreadsAfterDurations, parseSlowMode } from "./utils"
 
 export const signals: MantoSignals = {
   guild: {},
   roles: {},
   categories: {},
+  channels: {},
   isLoaded: false,
 }
 
@@ -175,6 +177,64 @@ export async function loadConfig(guild: Guild, config: MantoConfig) {
     })
   }
 
+  const loadChannels = async () => {
+    config.channels.forEach(async (channel) => {
+      for (const key of CONFIG_CHANNEL_KEYS) {
+        const dChannelId = channel.discordId!
+
+        if (!dChannelId)
+          continue
+
+        if (!signals.channels[dChannelId])
+          signals.channels[dChannelId] = {}
+
+        const value = JSON.stringify((channel as any)[key])
+
+        if (!signals.channels[dChannelId][key])
+          signals.channels[dChannelId][key] = signal(value)
+        else
+          signals.channels[dChannelId][key].value = value
+
+        if (signals.isLoaded)
+          continue
+
+        const dChannel = guild.channels.cache.get(dChannelId)
+
+        if (!dChannel)
+          continue
+
+        effect(async () => {
+          const channel = signals.channels[dChannel.id]
+
+          const typeString = channel.type?.value
+
+          const parentName = channel.category?.value
+          const parent = parentName && guild.channels.cache.get(parentName)
+
+          // TODO
+          // const permissions = channel.permissions?.value ? parseSchemaPermissions(channel.permissions?.value, guild) : []
+
+          const c = await guild.channels.edit(dChannel, {
+            name: channel.channel_name?.value && JSON.parse(channel.channel_name?.value),
+            topic: channel.topic?.value && JSON.parse(channel.topic?.value),
+            type: getDiscordType(typeString && JSON.parse(typeString)),
+            parent,
+            nsfw: channel.age_restricted?.value && Boolean(JSON.parse(channel.age_restricted?.value)),
+            rateLimitPerUser: parseSlowMode(channel.slow_mode?.value),
+            defaultThreadRateLimitPerUser: parseHideThreadsAfterDurations(channel.hide_threads_after?.value),
+          })
+
+          /* for (const parsedPerm of permissions) {
+            const target = parsedPerm.target === "@everyone" ? guild.roles.everyone : parsedPerm.target
+            await c.permissionOverwrites.create(target, parsedPerm.perms)
+          } */
+
+          process.env.NODE_ENV && console.log("[MANTO] Updated channel ", dChannelId)
+        })
+      }
+    })
+  }
+
   try {
     loadGuild()
   }
@@ -191,6 +251,13 @@ export async function loadConfig(guild: Guild, config: MantoConfig) {
 
   try {
     await loadCategories()
+  }
+  catch (e) {
+    console.error(e)
+  }
+
+  try {
+    await loadChannels()
   }
   catch (e) {
     console.error(e)

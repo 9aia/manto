@@ -2,7 +2,7 @@ import fs from "node:fs"
 import path from "node:path"
 import yaml from "yaml"
 import { basename } from "discord.js"
-import type { FSCategoryConfig, FSChannelConfig } from "../channels/types"
+import type { MantoCategory, MantoChannel } from "../channels/types"
 import type { FSGuildConfig } from "../server/types"
 import type { MantoRole } from "../roles/types"
 import type { ChannelMeta, FsRes, RoleMeta } from "./types.d"
@@ -56,8 +56,8 @@ function readReses<M extends object>(
 
 export function readConfig(folderPath: string) {
   const roles: MantoRole[] = []
-  const channels: FSChannelConfig[] = []
-  const categories: FSCategoryConfig[] = []
+  const channels: MantoChannel[] = []
+  const categories: MantoCategory[] = []
 
   const readGuild = (folderPath: string): FSGuildConfig | null => {
     let base

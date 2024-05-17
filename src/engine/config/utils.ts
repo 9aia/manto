@@ -1,5 +1,6 @@
 import fs from "node:fs"
 import path from "node:path"
+import type { HideThreadAfterString, SlowModeString } from "../channels/types"
 
 export function replaceExtname(filePath: string, newExtension: string) {
   const oldExtension = path.extname(filePath)
@@ -32,4 +33,54 @@ export function readMantoFile<T extends object>(rootDir: string, name: string) {
   }
 
   return data
+}
+
+export function getDiscordType(type: string) {
+  let dType
+
+  switch (type) {
+    case "text":
+      dType = 0
+      break
+    case "voice":
+      dType = 2
+      break
+    default:
+      dType = 0
+      break
+  }
+
+  return dType
+}
+
+const slowModeDurations: { [key in SlowModeString]: number } = {
+  "off": 0,
+  "5s": 5,
+  "10s": 10,
+  "15s": 15,
+  "30s": 30,
+  "1m": 60,
+  "2m": 2 * 60,
+  "5m": 5 * 60,
+  "10m": 10 * 60,
+  "15m": 15 * 60,
+  "30m": 30 * 60,
+  "1h": 1 * 60 * 60,
+  "2h": 2 * 60 * 60,
+  "6h": 6 * 60 * 60,
+}
+
+export function parseSlowMode(slowMode: SlowModeString): number {
+  return slowModeDurations[slowMode] ?? 0
+}
+
+const hideThreadsAfterDurations: { [key in HideThreadAfterString]: number } = {
+  "1h": 1 * 60 * 60,
+  "24h": 24 * 60 * 60,
+  "3d": 3 * 24 * 60 * 60,
+  "1w": 1 * 7 * 24 * 60 * 60,
+}
+
+export function parseHideThreadsAfterDurations(hideThreadsAfter: HideThreadAfterString): number {
+  return hideThreadsAfterDurations[hideThreadsAfter] ?? 0
 }
