@@ -34,6 +34,13 @@ export async function applyRoles(
 ) {
   const roleIds = readMantoFile(rootDir, MantoFile.ROLE)
 
+  const createRole = async (role: ApplicableRole, options: any) => {
+    const r = await guild.roles.create(options)
+    roleIds[role.id] = r.id
+
+    console.log(`[MANTO] Role '${r.name}' (${r.id}) created`)
+  }
+
   for (const role of aConfig.roles) {
     const dRoleId = roleIds[role.id]
     const { alreadyCreated, options } = prepareOptions(role, dRoleId)
@@ -45,6 +52,8 @@ export async function applyRoles(
         delete roleIds[dRoleId] // remove orphan
 
         console.log(`[MANTO] Orphan role ${dRoleId} removed from manto file`)
+
+        await createRole(role, options)
       }
       else {
         guild.roles.edit(dRole, options)
@@ -57,10 +66,7 @@ export async function applyRoles(
       }
     }
     else {
-      const r = await guild.roles.create(options)
-      roleIds[role.id] = r.id
-
-      console.log(`[MANTO] Role '${r.name}' (${r.id}) created`)
+      await createRole(role, options)
     }
   }
 
@@ -76,6 +82,14 @@ export async function applyChannels(
   const catIdByNames: Record<string, string> = {} as any
 
   const applyCategories = async () => {
+    const createCategory = async (cat: ApplicableCategory, options: any) => {
+      const c = await guild.channels.create(options)
+      catIds[cat.id] = c.id
+      catIdByNames[c.name] = c.id
+
+      console.log(`[MANTO] Category '${c.name}' (${c.id}) created`)
+    }
+
     for (const cat of aConfig.categories) {
       const dCatId = catIds[cat.id]
       const { alreadyCreated, options: _options } = prepareOptions(cat, dCatId)
@@ -93,6 +107,8 @@ export async function applyChannels(
           delete catIdByNames[cat.id]
 
           console.log(`[MANTO] Orphan category ${dCatId} removed from manto file`)
+
+          await createCategory(cat, options)
         }
         else {
           const editOptions = {
@@ -110,11 +126,7 @@ export async function applyChannels(
         }
       }
       else {
-        const c = await guild.channels.create(options as GuildChannelCreateOptions)
-        catIds[cat.id] = c.id
-        catIdByNames[c.name] = c.id
-
-        console.log(`[MANTO] Category '${c.name}' (${c.id}) created`)
+        await createCategory(cat, options)
       }
     }
 
@@ -123,6 +135,13 @@ export async function applyChannels(
 
   const applyChannels = async () => {
     const channelIds = readMantoFile(rootDir, MantoFile.CHANNEL)
+
+    const createChannel = async (channel: ApplicableChannel, options: any) => {
+      const c = await guild.channels.create(options)
+      channelIds[channel.id] = c.id
+
+      console.log(`[MANTO] Channel '${c.name}' (${c.id}) created`)
+    }
 
     for (const channel of aConfig.channels) {
       const dChannelId = channelIds[channel.id]
@@ -151,6 +170,8 @@ export async function applyChannels(
           delete channelIds[dChannelId] // remove orphan
 
           console.log(`[MANTO] Orphan channel ${dChannelId} removed from manto file`)
+
+          await createChannel(channel, options)
         }
         else {
           guild.channels.edit(dChannel, options as GuildChannelEditOptions)
@@ -163,10 +184,7 @@ export async function applyChannels(
         }
       }
       else {
-        const c = await guild.channels.create(options as GuildChannelCreateOptions)
-        channelIds[channel.id] = c.id
-
-        console.log(`[MANTO] Channel '${c.name}' (${c.id}) created`)
+        await createChannel(channel, options)
       }
     }
 
