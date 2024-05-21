@@ -1,6 +1,6 @@
-import type { Guild, OverwriteResolvable } from "discord.js"
+import type { Guild } from "discord.js"
 import type { ApplicableConfig, MantoConfig } from "./types"
-import { ChannelType, HideThreadAfter, InactiveUserTimeout, SlowMode, parseSchemaPermissions } from "./utils"
+import { ChannelType, HideThreadAfter, InactiveUserTimeout, SlowMode } from "./utils"
 
 export async function transformConfig(
   guild: Guild,
@@ -47,7 +47,6 @@ export async function transformConfig(
 
   aConfig.channels = config.channels.map((channel) => {
     const channelType = (channel.type as any)?.toUpperCase()
-    const permissions = channel.permissions ? parseSchemaPermissions(channel.permissions, guild) : []
 
     return {
       id: channel.id,
@@ -58,7 +57,7 @@ export async function transformConfig(
       type: ChannelType[channelType || "TEXT"] as unknown as number,
       rateLimitPerUser: SlowMode[channel.slow_mode || "off"] as unknown as number,
       defaultThreadRateLimitPerUser: HideThreadAfter[channel.hide_threads_after || "1h"] as unknown as number,
-      mantoPermissions: permissions,
+      mantoPermissions: channel.permissions,
     }
   })
 

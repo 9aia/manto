@@ -1,7 +1,7 @@
 import type { Guild, GuildChannelCreateOptions, GuildChannelEditOptions } from "discord.js"
 import { ChannelType as _DiscordChannelType } from "discord.js"
-import type { ApplicableConfig, MantoOptions } from "./types"
-import { MantoFile, parseChannelPerms, prepareOptions, readMantoFile, saveMantoFile } from "./utils"
+import type { ApplicableCategory, ApplicableChannel, ApplicableConfig, ApplicableRole, MantoOptions } from "./types"
+import { MantoFile, prepareOptions, readMantoFile, resolveChannelPerms, saveMantoFile } from "./utils"
 
 export async function applyConfig(
   guild: Guild,
@@ -131,11 +131,12 @@ export async function applyChannels(
 
       const parentName = channel.mantoCategory
       const parent = parentName && guild.channels.cache.get(catIdByNames[parentName])
-      const perms = parseChannelPerms(guild, channel)
+
+      const permissionOverwrites = resolveChannelPerms(guild, channel.mantoPermissions)
 
       const options = {
         parent,
-        permissionOverwrites: perms,
+        permissionOverwrites,
         ..._options,
       }
       delete options.mantoCategory

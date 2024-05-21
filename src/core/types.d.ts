@@ -38,7 +38,7 @@ export interface MantoChannel {
   name: string
   type: ChannelType
   category?: string
-  permissions?: { [key: string]: string[] }
+  permissions?: MantoPermissions
   topic?: string
   slow_mode: SlowMode
   nsfw: string
@@ -51,6 +51,8 @@ export interface MantoConfig {
   categories: MantoCategory[]
   channels: MantoChannel[]
 }
+
+export interface MantoPermissions { [key: string]: string[] }
 
 export interface MantoOptions {
   rootDir?: string
@@ -66,7 +68,7 @@ export interface ApplicableRole extends RoleEditOptions, Applicable { }
 export interface ApplicableCategory extends GuildChannelEditOptions, Applicable { }
 export interface ApplicableChannel extends GuildChannelEditOptions, Applicable {
   mantoCategory?: string
-  mantoPermissions: ParsedPermission[]
+  mantoPermissions?: MantoPermissions
 }
 
 export interface ApplicableConfig {
@@ -97,12 +99,12 @@ export interface ParsedPermission {
 
 export interface ChannelMeta {
   category_name?: string
-  perms?: { [key: string]: string[] }
+  perms?: MantoPermissions
 }
 
 export interface RoleMeta {
   category_name?: string
-  perms?: { [key: string]: string[] }
+  perms?: MantoPermissions
 }
 
 export enum MetaType {
