@@ -5,7 +5,7 @@ import { Client, Collection, GatewayIntentBits, REST } from "discord.js"
 import loadCommands from "../lib/discord/slash-commands/loadCommands"
 import deployCommands from "../lib/discord/slash-commands/deployCommands"
 import handleCommands from "../lib/discord/slash-commands/handleCommands"
-import { configureAmbient } from "./engine/config/ambient"
+import { configureAmbient } from "./core/ambient"
 
 export const rest = new REST().setToken(process.env.DISCORD_TOKEN!)
 export const client = new Client({

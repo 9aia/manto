@@ -1,6 +1,6 @@
-name: 👮 Moderator
-color: Green
+name: 👮 mod
+color: Orange
 icon_url: ""
-separate_from_online: true
-allow_mention: true
+hoist: true
+mentionable: true
 permissions: [BanMembers, KickMembers, MuteMembers]

@@ -1,17 +1,12 @@
-server_name: Neogaia Server
+name: Neogaia Server
 logo_url: "https://avatars.githubusercontent.com/u/101954293?s=48&v=4"
 
-inactive_channel: ""
-inactive_timeout: 1min
+afk_channel: ""
+afk_timeout: 1min
 
-system_messages_channel: chat
-send_welcome_message: true
-prompt_welcome_reply_sticky: true
-send_boost_message: true
-send_helpful_tips: true
+system_channel: chat
 
 default_notifications: all_messages
 
-show_boost_progress_bar: true
-server_banner_background_url: ""
-server_invite_background_url: ""
+enable_premium_progress_bar: true
+banner_url: ""

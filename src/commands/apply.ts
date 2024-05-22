@@ -1,13 +1,15 @@
 import { existsSync } from "node:fs"
 import path from "node:path"
 import { SlashCommandBuilder } from "discord.js"
-import { parseFS } from "../engine/config/FSParser"
 import type { ExecuteFn } from "../../lib/discord/slash-commands/types"
-import { templatesPath } from "../engine/config/ambient"
+import { templatesPath } from "../core/ambient"
+import { applyConfig } from "../core/apply"
+import { readConfig } from "../core/read"
+import { transformConfig } from "../core/transform"
 
 export const data = new SlashCommandBuilder()
-  .setName("clone")
-  .setDescription("Clone a server.")
+  .setName("apply")
+  .setDescription("Update the server settings based on a template.")
   .addStringOption(o => o
     .setName("template-name")
     .setDescription("Template name to be used.")
@@ -17,9 +19,9 @@ export const data = new SlashCommandBuilder()
 export const execute: ExecuteFn = async (inter) => {
   const templateName = inter.options.getString("template-name") as string
 
-  const templatePath = path.join(templatesPath, templateName)
+  const rootDir = path.join(templatesPath, templateName)
 
-  if (!existsSync(templatePath)) {
+  if (!existsSync(rootDir)) {
     await inter.reply({ content: `Template not found: ${templateName}`, ephemeral: true })
     return
   }
@@ -29,9 +31,12 @@ export const execute: ExecuteFn = async (inter) => {
     return
   }
 
-  await inter.reply({ content: `Cloning from \`${templateName}\`.`, ephemeral: true })
+  await inter.reply({ content: `Updating server settings based on \`${templateName}\`.`, ephemeral: true })
 
-  await parseFS(inter.guild, templatePath)
+  const config = readConfig(rootDir)
+  const aConfig = await transformConfig(inter.guild, config)
 
-  await inter.editReply({ content: `Cloning complete.` })
+  await applyConfig(inter.guild, aConfig, { rootDir })
+
+  await inter.editReply({ content: `Server settings have been updated.` })
 }
