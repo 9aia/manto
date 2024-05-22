@@ -31,7 +31,13 @@ function readReses<M extends object>(
   cb?: ReadFilesCb,
   lastMeta: M = {} as M,
 ) {
-  const files = fs.readdirSync(dirPath)
+  const files = fs.readdirSync(dirPath).sort((_, b) => {
+    if (b === "_category.yml" || b === "_category.yaml")
+      return 2
+    if (b.startsWith("_"))
+      return 1
+    return -1
+  })
 
   files.forEach((file) => {
     const filePath = path.join(dirPath, file)
