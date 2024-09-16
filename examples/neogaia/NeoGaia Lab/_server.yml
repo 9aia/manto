@@ -1,0 +1,21 @@
+id: 27c7d9e6-eb37-4c72-b7ba-653481a74e58
+name: Hello
+icon_url: https://github.com/luisfuturist.png
+afk_channel: Afk
+afk_timeout: 5min
+system_channel: system
+default_notifications: only_mentions
+enable_premium_progress_bar: false
+banner_url: ""
+roles:
+  - id: cce62064-0b76-4f39-9311-99baa83fac24
+    name: Admin
+    color: Red
+    permissions:
+      - Administrator
+  - id: f2d09c91-a51a-4c38-b8b3-48876dfc2095
+    name: Moderator
+    color: Yellow
+    permissions:
+      - ManageMessages
+      - BanMembers

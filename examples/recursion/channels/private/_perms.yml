@@ -1,4 +1,0 @@
-DenyViewChannel: ["@everyone"]
-DenySendMessages: ["@everyone"]
-DenyConnect: ["@everyone"]
-DenySpeak: ["@everyone"]

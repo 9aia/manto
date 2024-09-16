@@ -1,13 +1,10 @@
 import fs from "node:fs"
 import path from "node:path"
 import type { Guild } from "discord.js"
-import type { Applicable, MantoPermissions, NormalizedPerm, ParsedPermission, SchemaPermissions } from "./types"
+import yaml from "yaml"
+import type { Applicable, MantoPermissions, MantoServer, NormalizedPerm, SchemaPermissions } from "./types"
 
-export enum MantoFile {
-  ROLE = "roles",
-  CATEGORY = "categories",
-  CHANNEL = "channels",
-}
+// #region Server
 
 export enum InactiveUserTimeout {
   "1min" = 60,
@@ -17,17 +14,26 @@ export enum InactiveUserTimeout {
   "1h" = 60 * 60,
 }
 
-function replaceExtname(filePath: string, newExtension: string) {
-  const oldExtension = path.extname(filePath)
-  const baseName = path.basename(filePath, oldExtension)
-  const newFilePath = path.join(path.dirname(filePath), `${baseName}.${newExtension}`)
-  return newFilePath
+// #endregion
+
+// #region Config
+
+export function existsYaml(dirPath: string, name: string) {
+  let base
+
+  if (fs.existsSync(path.join(dirPath, `${name}.yml`)))
+    base = `${name}.yml`
+  else if (fs.existsSync(path.join(dirPath, `${name}.yaml`)))
+    base = `${name}.yaml`
+  else base = null
+
+  return base
 }
 
-export function readMantoFile(rootDir: string, name: string) {
+export function readMantoFile(rootDir: string) {
   let data: Record<string, string> = {}
 
-  const roleFilePath = replaceExtname(path.join(rootDir, ".manto", name), "json")
+  const roleFilePath = path.join(rootDir, ".manto/bind.json")
 
   if (fs.existsSync(roleFilePath)) {
     const content = fs.readFileSync(roleFilePath, { encoding: "utf-8" })
@@ -40,24 +46,84 @@ export function readMantoFile(rootDir: string, name: string) {
 export async function saveMantoFile(
   rootDir: string,
   data: Record<string, string>,
-  name: "roles" | "channels" | "categories",
 ) {
-  const mantoPath = path.join(rootDir, ".manto", name)
+  const mantoPath = path.join(rootDir, ".manto/bind.json")
 
   if (!fs.existsSync(path.dirname(mantoPath)))
     fs.mkdirSync(path.dirname(mantoPath), { recursive: true })
 
-  fs.writeFileSync(replaceExtname(mantoPath, "json"), JSON.stringify(data))
+  fs.writeFileSync(mantoPath, JSON.stringify(data))
 }
 
-export function prepareOptions<T extends Applicable>(item: T, itemId: string) {
-  const alreadyCreated = !!itemId
+export function insertMantoId<T>(
+  filePath: string,
+  mantoId: string,
+): T {
+  let data: any = {} as any
+
+  if (fs.existsSync(filePath)) {
+    const content = fs.readFileSync(filePath, "utf-8")
+    data = yaml.parse(content)
+  }
+
+  data = { id: mantoId, ...data }
+
+  fs.writeFileSync(filePath, yaml.stringify(data))
+
+  return data
+}
+
+export function insertRoleMantoId(
+  filePath: string,
+  index: number,
+  mantoId: string,
+) {
+  let data: any = {} as any
+
+  if (fs.existsSync(filePath)) {
+    const content = fs.readFileSync(filePath, "utf-8")
+    data = yaml.parse(content)
+  }
+
+  const roles = data.roles || []
+  roles[index] = { id: mantoId, ...roles[index] }
+  data.roles = roles
+
+  fs.writeFileSync(filePath, yaml.stringify(data))
+
+  return data
+}
+
+// #endregion
+
+// #region Applicable
+
+export function prepareOptions<T extends Applicable>(item: T) {
+  const alreadyCreated = Boolean((item as any).mantoId)
 
   const options: Partial<T> = { ...item }
-  delete options.id
-  delete options.discordId
 
-  return { alreadyCreated, options }
+  delete (options as any).mantoCategory
+  delete (options as any).mantoPermissions
+  delete (options as any).mantoId
+
+  return { alreadyCreated, options, path }
+}
+
+// #endregion
+
+// #region Channels
+
+export enum HideThreadAfter {
+  "1h" = 1 * 60 * 60,
+  "24h" = 24 * 60 * 60,
+  "3d" = 3 * 24 * 60 * 60,
+  "1w" = 1 * 7 * 24 * 60 * 60,
+}
+
+export enum ChannelType {
+  TEXT = 0,
+  VOICE = 2,
 }
 
 export enum SlowMode {
@@ -75,55 +141,6 @@ export enum SlowMode {
   "1h" = 1 * 60 * 60,
   "2h" = 2 * 60 * 60,
   "6h" = 6 * 60 * 60,
-}
-
-export enum HideThreadAfter {
-  "1h" = 1 * 60 * 60,
-  "24h" = 24 * 60 * 60,
-  "3d" = 3 * 24 * 60 * 60,
-  "1w" = 1 * 7 * 24 * 60 * 60,
-}
-
-export enum ChannelType {
-  TEXT = 0,
-  VOICE = 2,
-}
-
-export function normalizePerm(perm: SchemaPermissions): NormalizedPerm {
-  const regxp = /(Allow|Deny|Default)(\w+)/
-  const match = perm.match(regxp)
-
-  if (!match)
-    return { name: perm } as NormalizedPerm
-
-  const [_, value, name] = match
-
-  switch (value) {
-    case "Allow":
-      return { name, value: true }
-    case "Deny":
-      return { name, value: false }
-    default:
-      return { name, value: undefined }
-  }
-}
-
-export function getUserId(guild: Guild, name: string) {
-  if (name === "@everyone")
-    return guild.roles.everyone.id
-
-  const role = guild.roles.cache.filter(r => r.name === name).at(0)
-
-  if (role)
-    return role.id
-
-  // if a role is not found, it will try to find it in the guild members
-  const member = guild.members.cache.filter(m => m.user.username === name).at(0)
-
-  if (member)
-    return member.id
-
-  return null
 }
 
 export function resolveChannelPerms(guild: Guild, mantoPerms?: MantoPermissions) {
@@ -157,3 +174,113 @@ export function resolveChannelPerms(guild: Guild, mantoPerms?: MantoPermissions)
     deny,
   }))
 }
+
+export function getSystemChannelId(guild: Guild, channelName?: string) {
+  if (!channelName)
+    return null
+
+  const systemChannel = guild.channels.cache.filter(
+    (ch => ch.name === channelName && ch.type === 0),
+  ).at(0)
+
+  if (systemChannel == null) {
+    console.log(`[WARNING] System channel not found: ${channelName}`)
+    return null
+  }
+
+  return systemChannel.id
+}
+
+export function getAfkChannelId(guild: Guild, channelName?: string) {
+  if (!channelName)
+    return null
+
+  const afkChannel = guild.channels.cache.filter(
+    (c => c.name === channelName && c.type === 2),
+  ).at(0)
+
+  if (!afkChannel) {
+    console.log(`[WARNING] AFK channel not found: ${channelName}`)
+    return null
+  }
+
+  return afkChannel.id
+}
+
+export function parseChannelFileName(fileName: string) {
+  const order = fileName.match(/^\d+\s/) ? Number.parseInt(fileName.match(/^\d+\s/)![0]) : null
+  const fileNameWithoutOrder = fileName.replace(/^\d+\s/, "")
+  const type = fileNameWithoutOrder.startsWith("voice") ? "voice" : "text"
+  const name = fileNameWithoutOrder.replace(/\.\w+$/, "")
+    .replace(/^voice\s/, "")
+
+  return {
+    order,
+    name,
+    type,
+  }
+}
+
+export function getCategoryConfigData(dirPath: string, isNonCategory: boolean) {
+  let data = {} as any
+  const configBase = existsYaml(dirPath, "_category")
+
+  if (configBase) {
+    if (isNonCategory) {
+      console.log("[WARN] Non-category folder should not have `_category` file: ", dirPath)
+    }
+    else {
+      const configFilePath = path.join(dirPath, configBase)
+      data = yaml.parse(fs.readFileSync(configFilePath, "utf-8"))
+    }
+  }
+
+  return data
+}
+
+// #endregion
+
+// #region Permissions
+
+export function normalizePerm(perm: SchemaPermissions): NormalizedPerm {
+  const regxp = /(Allow|Deny|Default)(\w+)/
+  const match = perm.match(regxp)
+
+  if (!match)
+    return { name: perm } as NormalizedPerm
+
+  const [_, value, name] = match
+
+  switch (value) {
+    case "Allow":
+      return { name, value: true }
+    case "Deny":
+      return { name, value: false }
+    default:
+      return { name, value: undefined }
+  }
+}
+
+// #endregion
+
+// #region User
+
+export function getUserId(guild: Guild, name: string) {
+  if (name === "@everyone")
+    return guild.roles.everyone.id
+
+  const role = guild.roles.cache.filter(r => r.name === name).at(0)
+
+  if (role)
+    return role.id
+
+  // if a role is not found, it will try to find it in the guild members
+  const member = guild.members.cache.filter(m => m.user.username === name).at(0)
+
+  if (member)
+    return member.id
+
+  return null
+}
+
+// #endregion

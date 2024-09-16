@@ -4,15 +4,23 @@ import type { CategoryChannel } from "discord.js"
 import type { readConfig } from "./read"
 import type { HideThreadAfter, SlowMode } from "./utils"
 
+// #region Manto
+
 export interface MantoGuild {
+  id: string
   name: string
-  icon_url: string
+  icon_url?: string
   system_channel?: string
   afk_channel?: string
   afk_timeout?: InactiveUserTimeout
-  default_notifications: "all_messages" | "only_mentions"
+  default_notifications?: "all_messages" | "only_mentions"
   enable_premium_progress_bar?: string
   banner_url?: string
+  filePath: string
+}
+
+export interface MantoServer extends MantoGuild {
+  roles: MantoRole[]
 }
 
 export interface MantoRole {
@@ -24,11 +32,14 @@ export interface MantoRole {
   mentionable?: string
   position?: string
   permissions?: PermissionResolvable
+  index: number
 }
 
 export interface MantoCategory {
   id: string
   name: string
+  permissions?: MantoPermissions
+  filePath: string
 }
 
 export type ChannelType = "voice" | "text"
@@ -43,42 +54,23 @@ export interface MantoChannel {
   slow_mode: SlowMode
   nsfw: string
   hide_threads_after?: HideThreadAfter
+  filePath: string
 }
 
 export interface MantoConfig {
-  guild: MantoGuild | null
+  guild: MantoGuild
   roles: MantoRole[]
   categories: MantoCategory[]
   channels: MantoChannel[]
 }
 
-export interface MantoPermissions { [key: string]: string[] }
-
 export interface MantoOptions {
   rootDir?: string
 }
 
-export interface Applicable {
-  id: string
-  discordId?: string
-}
-
-export interface ApplicableGuild extends GuildEditOptions { }
-export interface ApplicableRole extends RoleEditOptions, Applicable { }
-export interface ApplicableCategory extends GuildChannelEditOptions, Applicable { }
-export interface ApplicableChannel extends GuildChannelEditOptions, Applicable {
-  mantoCategory?: string
-  mantoPermissions?: MantoPermissions
-}
-
-export interface ApplicableConfig {
-  guild: ApplicableGuild | null
-  roles: ApplicableRole[]
-  categories: ApplicableCategory[]
-  channels: ApplicableChannel[]
-}
-
 // #region Permission
+
+export interface MantoPermissions { [key: string]: string[] }
 
 export interface NormalizedPerm {
   name: string
@@ -95,17 +87,38 @@ export interface ParsedPermission {
 
 // #endregion
 
+// #endregion
+
+// #region Applicable
+
+export interface Applicable {}
+
+export interface EditableApplicable extends Applicable {
+  id: string
+  mantoId: string
+  mantoPath: string
+}
+
+export interface ApplicableGuild extends GuildEditOptions, EditableApplicable { }
+export interface ApplicableRole extends RoleEditOptions, EditableApplicable {
+  mantoIndex: number
+}
+export interface ApplicableCategory extends GuildChannelEditOptions, EditableApplicable {}
+export interface ApplicableChannel extends GuildChannelEditOptions, EditableApplicable {
+  mantoCategory?: string
+  mantoPermissions?: MantoPermissions
+}
+
+export interface ApplicableConfig {
+  guild: ApplicableGuild
+  roles: ApplicableRole[]
+  categories: ApplicableCategory[]
+  channels: ApplicableChannel[]
+}
+
+// #endregion
+
 // #region Reader
-
-export interface ChannelMeta {
-  category_name?: string
-  perms?: MantoPermissions
-}
-
-export interface RoleMeta {
-  category_name?: string
-  perms?: MantoPermissions
-}
 
 export enum MetaType {
   CATEGORY = "_category",

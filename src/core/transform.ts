@@ -1,63 +1,85 @@
 import type { Guild } from "discord.js"
-import type { ApplicableConfig, MantoConfig } from "./types"
-import { ChannelType, HideThreadAfter, InactiveUserTimeout, SlowMode } from "./utils"
+import type { ApplicableConfig, MantoConfig, MantoOptions } from "./types"
+import { ChannelType, HideThreadAfter, InactiveUserTimeout, SlowMode, getAfkChannelId, getSystemChannelId, readMantoFile } from "./utils"
 
 export async function transformConfig(
   guild: Guild,
   config: MantoConfig,
+  options: MantoOptions,
 ): Promise<ApplicableConfig> {
+  const rootDir = options.rootDir || "./"
+
   const aConfig = {} as ApplicableConfig
+  const ids = readMantoFile(rootDir)
 
   const g = config.guild
   if (g) {
-    const systemChannel = guild.channels.cache.filter((ch => ch.name === g.system_channel?.toLowerCase().replace(" ", "-") && ch.type === 0)).at(0) || null
-    const afkChannel = guild.channels.cache.filter((ch => ch.name === g.afk_channel?.toLowerCase().replace(" ", "-") && ch.type === 4)).at(0) || null
+    const systemChannelId = getSystemChannelId(guild, g.system_channel)
+    const afkChannelId = getAfkChannelId(guild, g.afk_channel)
+
+    const dId = ids[g.id]
 
     aConfig.guild = {
+      id: dId,
+      mantoId: g.id,
+      mantoPath: g.filePath,
       name: g.name,
       icon: g.icon_url || null,
       banner: g.banner_url || null,
       defaultMessageNotifications: g.default_notifications === "all_messages" ? 0 : 1,
       premiumProgressBarEnabled: Boolean(g.enable_premium_progress_bar),
-      systemChannel: systemChannel as any,
-      afkChannel: afkChannel as any,
+      systemChannel: systemChannelId,
+      afkChannel: afkChannelId,
       afkTimeout: InactiveUserTimeout[g.afk_timeout || "5min"] as unknown as number,
     }
   }
 
-  aConfig.roles = config.roles.map((role) => {
+  aConfig.roles = config.roles.map((r) => {
+    const dId = ids[r.id]
+
     return {
-      id: role.id,
-      name: role.name,
-      color: role.color,
-      hoist: Boolean(role.hoist),
-      icon: role.icon_url || null,
-      mentionable: Boolean(role.mentionable),
-      position: Number(role.position),
-      permissions: role.permissions,
+      id: dId,
+      mantoId: r.id,
+      mantoPath: config.guild.filePath,
+      mantoIndex: r.index,
+      name: r.name,
+      color: r.color,
+      hoist: Boolean(r.hoist),
+      icon: r.icon_url || null,
+      mentionable: Boolean(r.mentionable),
+      position: Number(r.position),
+      permissions: r.permissions,
     }
   })
 
-  aConfig.categories = config.categories.map((cat) => {
+  aConfig.categories = config.categories.map((c) => {
+    const dId = ids[c.id]
+
     return {
-      id: cat.id,
-      name: cat.name,
+      id: dId,
+      mantoId: c.id,
+      mantoPath: c.filePath,
+      name: c.name,
+      // TODO permissions
     }
   })
 
-  aConfig.channels = config.channels.map((channel) => {
-    const channelType = (channel.type as any)?.toUpperCase()
+  aConfig.channels = config.channels.map((c) => {
+    const dId = ids[c.id]
+    const channelType = (c.type as any)?.toUpperCase()
 
     return {
-      id: channel.id,
-      name: channel.name,
-      topic: channel.topic,
-      mantoCategory: channel.category,
-      nsfw: Boolean(channel.nsfw),
+      id: dId,
+      mantoId: c.id,
+      mantoCategory: c.category,
+      mantoPermissions: c.permissions,
+      mantoPath: c.filePath,
+      name: c.name,
+      topic: c.topic,
+      nsfw: Boolean(c.nsfw),
       type: ChannelType[channelType || "TEXT"] as unknown as number,
-      rateLimitPerUser: SlowMode[channel.slow_mode || "off"] as unknown as number,
-      defaultThreadRateLimitPerUser: HideThreadAfter[channel.hide_threads_after || "1h"] as unknown as number,
-      mantoPermissions: channel.permissions,
+      rateLimitPerUser: SlowMode[c.slow_mode || "off"] as unknown as number,
+      defaultThreadRateLimitPerUser: HideThreadAfter[c.hide_threads_after || "1h"] as unknown as number,
     }
   })
 

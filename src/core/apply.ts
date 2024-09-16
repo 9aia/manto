@@ -1,7 +1,8 @@
-import type { Guild, GuildChannelCreateOptions, GuildChannelEditOptions } from "discord.js"
+import path from "node:path"
+import type { Guild, GuildChannelEditOptions } from "discord.js"
 import { ChannelType as _DiscordChannelType } from "discord.js"
 import type { ApplicableCategory, ApplicableChannel, ApplicableConfig, ApplicableRole, MantoOptions } from "./types"
-import { MantoFile, prepareOptions, readMantoFile, resolveChannelPerms, saveMantoFile } from "./utils"
+import { existsYaml, insertMantoId, insertRoleMantoId, parseChannelFileName, prepareOptions, readMantoFile, resolveChannelPerms, saveMantoFile } from "./utils"
 
 export async function applyConfig(
   guild: Guild,
@@ -19,12 +20,14 @@ export async function applyGuild(
   guild: Guild,
   aConfig: ApplicableConfig,
 ) {
-  if (!aConfig.guild)
+  const g = aConfig.guild
+
+  if (!g)
     return
 
-  const g = await guild.edit(aConfig.guild)
+  await guild.edit(aConfig.guild)
 
-  console.log(`[MANTO] Guild '${g.name}' updated`)
+  console.log(`[INFO] Guild '${g.name}' (${g.mantoId}) has been updated`)
 }
 
 export async function applyRoles(
@@ -32,33 +35,35 @@ export async function applyRoles(
   aConfig: ApplicableConfig,
   rootDir: string,
 ) {
-  const roleIds = readMantoFile(rootDir, MantoFile.ROLE)
+  const bind = readMantoFile(rootDir)
 
-  const createRole = async (role: ApplicableRole, options: any) => {
-    const r = await guild.roles.create(options)
-    roleIds[role.id] = r.id
+  const createRole = async (r: ApplicableRole, options: any) => {
+    const dRole = await guild.roles.create(options)
+    bind[r.mantoId] = dRole.id
 
-    console.log(`[MANTO] Role '${r.name}' (${r.id}) created`)
+    const serverFilePath = aConfig.guild?.mantoPath
+    insertRoleMantoId(serverFilePath, r.mantoIndex, r.mantoId)
+
+    console.log(`[INFO] Role '${r.name}' (${r.mantoId}) has been created`)
   }
 
-  for (const role of aConfig.roles) {
-    const dRoleId = roleIds[role.id]
-    const { alreadyCreated, options } = prepareOptions(role, dRoleId)
+  for (const r of aConfig.roles) {
+    const dRoleId = bind[r.mantoId]
+    const { alreadyCreated, options } = prepareOptions(r)
 
     if (alreadyCreated) {
       const dRole = guild.roles.cache.get(dRoleId)
 
       if (!dRole) {
-        delete roleIds[dRoleId] // remove orphan
+        delete bind[r.mantoId] // remove orphan
+        console.log(`[INFO] Orphan role \`${r.mantoId}\` removed from manto file`)
 
-        console.log(`[MANTO] Orphan role ${dRoleId} removed from manto file`)
-
-        await createRole(role, options)
+        await createRole(r, options)
       }
       else {
         guild.roles.edit(dRole, options)
-          .then((r) => {
-            console.log(`[MANTO] Role '${r.name}' (${r.id}) edited`)
+          .then((_) => {
+            console.log(`[INFO] Role '${r.name}' (${r.mantoId}) has been edited`)
           })
           .catch((e) => {
             console.error(e)
@@ -66,11 +71,11 @@ export async function applyRoles(
       }
     }
     else {
-      await createRole(role, options)
+      await createRole(r, options)
     }
   }
 
-  await saveMantoFile(rootDir, roleIds, MantoFile.ROLE)
+  await saveMantoFile(rootDir, bind)
 }
 
 export async function applyChannels(
@@ -78,21 +83,29 @@ export async function applyChannels(
   aConfig: ApplicableConfig,
   rootDir: string,
 ) {
-  const catIds = readMantoFile(rootDir, MantoFile.CATEGORY)
-  const catIdByNames: Record<string, string> = {} as any
+  const bind = readMantoFile(rootDir)
+
+  const createCategory = async (cat: ApplicableCategory, options: any) => {
+    const c = await guild.channels.create(options)
+    bind[cat.mantoId] = c.id
+
+    let base = existsYaml(cat.mantoPath!, "_category")
+    if (base == null)
+      base = "_category.yml"
+
+    insertMantoId(path.join(cat.mantoPath!, base), cat.mantoId)
+
+    console.log(`[INFO] Category '${c.name}' (${cat.mantoId}) has been created`)
+  }
 
   const applyCategories = async () => {
-    const createCategory = async (cat: ApplicableCategory, options: any) => {
-      const c = await guild.channels.create(options)
-      catIds[cat.id] = c.id
-      catIdByNames[c.name] = c.id
+    for (const c of aConfig.categories) {
+      const isNonCategory = c.name === "_"
+      if (isNonCategory)
+        continue
 
-      console.log(`[MANTO] Category '${c.name}' (${c.id}) created`)
-    }
-
-    for (const cat of aConfig.categories) {
-      const dCatId = catIds[cat.id]
-      const { alreadyCreated, options: _options } = prepareOptions(cat, dCatId)
+      const dCatId = bind[c.mantoId]
+      const { alreadyCreated, options: _options } = prepareOptions(c)
 
       const options = {
         type: _DiscordChannelType.GuildCategory,
@@ -103,12 +116,11 @@ export async function applyChannels(
         const dCat = guild.channels.cache.get(dCatId)
 
         if (!dCat) { // remove orphan
-          delete catIds[dCatId]
-          delete catIdByNames[cat.id]
+          delete bind[c.mantoId]
 
-          console.log(`[MANTO] Orphan category ${dCatId} removed from manto file`)
+          console.log(`[INFO] Orphan category \`${c.mantoId}\` removed from manto file`)
 
-          await createCategory(cat, options)
+          await createCategory(c, options)
         }
         else {
           const editOptions = {
@@ -117,8 +129,8 @@ export async function applyChannels(
           delete editOptions.type
 
           guild.channels.edit(dCat, editOptions)
-            .then((c) => {
-              console.log(`[MANTO] Category '${c.name}' (${c.id}) edited`)
+            .then((_) => {
+              console.log(`[INFO] Category '${c.name}' (${c.mantoId}) has been edited`)
             })
             .catch((e) => {
               console.error(e)
@@ -126,57 +138,56 @@ export async function applyChannels(
         }
       }
       else {
-        await createCategory(cat, options)
+        await createCategory(c, options)
       }
     }
 
-    await saveMantoFile(rootDir, catIds, MantoFile.CATEGORY)
+    await saveMantoFile(rootDir, bind)
   }
 
   const applyChannels = async () => {
-    const channelIds = readMantoFile(rootDir, MantoFile.CHANNEL)
-
     const createChannel = async (channel: ApplicableChannel, options: any) => {
       const c = await guild.channels.create(options)
-      channelIds[channel.id] = c.id
+      bind[channel.mantoId] = c.id
+      insertMantoId(channel.mantoPath!, channel.mantoId)
 
-      console.log(`[MANTO] Channel '${c.name}' (${c.id}) created`)
+      const { name, type } = parseChannelFileName(channel.name!)
+
+      if (type === "text")
+        console.log(`[INFO] Text channel '${name}' (${channel.mantoId}) has been created`)
+      else
+        console.log(`[INFO] Voice channel '${name}' (${channel.mantoId}) has been created`)
     }
 
-    for (const channel of aConfig.channels) {
-      const dChannelId = channelIds[channel.id]
+    for (const c of aConfig.channels) {
+      const dChannelId = bind[c.mantoId]
 
-      const { alreadyCreated, options: _options } = prepareOptions(channel, dChannelId)
+      const { alreadyCreated, options: _options } = prepareOptions(c)
 
-      const parentName = channel.mantoCategory
-      const parent = parentName && guild.channels.cache.get(catIdByNames[parentName])
+      const mantoCategory = c.mantoCategory
+      const parent = mantoCategory && guild.channels.cache.get(bind[mantoCategory])
 
-      const permissionOverwrites = resolveChannelPerms(guild, channel.mantoPermissions)
+      const permissionOverwrites = resolveChannelPerms(guild, c.mantoPermissions)
 
       const options = {
         parent,
         permissionOverwrites,
         ..._options,
       }
-      delete options.mantoCategory
-      delete options.mantoPermissions
-      delete options.discordId
-      delete options.id
 
       if (alreadyCreated) {
         const dChannel = guild.channels.cache.get(dChannelId)
 
         if (!dChannel) {
-          delete channelIds[dChannelId] // remove orphan
+          delete bind[dChannelId] // remove orphan
+          console.log(`[INFO] Orphan channel \`${c.mantoId}\` removed from manto file`)
 
-          console.log(`[MANTO] Orphan channel ${dChannelId} removed from manto file`)
-
-          await createChannel(channel, options)
+          await createChannel(c, options)
         }
         else {
           guild.channels.edit(dChannel, options as GuildChannelEditOptions)
-            .then((c) => {
-              console.log(`[MANTO] Channel '${c.name}' (${c.id}) edited`)
+            .then((_) => {
+              console.log(`[INFO] Channel '${c.name}' (${c.mantoId}) has been edited`)
             })
             .catch((e) => {
               console.error(e)
@@ -184,11 +195,11 @@ export async function applyChannels(
         }
       }
       else {
-        await createChannel(channel, options)
+        await createChannel(c, options)
       }
     }
 
-    await saveMantoFile(rootDir, channelIds, MantoFile.CHANNEL)
+    await saveMantoFile(rootDir, bind)
   }
 
   await applyCategories()

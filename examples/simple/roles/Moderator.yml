@@ -1,6 +1,0 @@
-name: 👮 mod
-color: Orange
-icon_url: ""
-hoist: true
-mentionable: true
-permissions: [BanMembers, KickMembers, MuteMembers]

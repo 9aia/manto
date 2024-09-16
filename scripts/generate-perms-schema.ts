@@ -21,4 +21,4 @@ Object.keys(PermissionFlagsBits).forEach((key) => {
   })
 })
 
-fs.writeFileSync("./schemas/permissions.schema.yml", content)
+fs.writeFileSync("./src/schemas/permissions.schema.yml", content)

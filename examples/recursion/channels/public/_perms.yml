@@ -1,6 +1,0 @@
-AllowSendMessages: ["@everyone"]
-AllowConnect: ["@everyone"]
-AllowViewChannel: ["@everyone"]
-AllowSpeak: ["@everyone"]
-AllowAttachFiles: [mod]
-DenyAttachFiles: ["@everyone"]

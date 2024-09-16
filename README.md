@@ -14,9 +14,10 @@ This project aims to simplify Discord server configuration through a file system
 
 This project includes the creation and management of the following:
 
-* **File System Structure**: Define a structured folder system to represent channels, categories, roles, and server settings.
-* **Configuration Files**: Develop YAML files to define server permissions, roles, and general settings.
-* **Bot**: Create a Discord Bot to automate applying or saving configurations for a Discord server.
+* **File System Structure**: A structured folder system to represent channels, categories, roles, and server settings.
+* **Configuration Schemas**: YAML schemas to define server permissions, roles, and general settings.
+* **Bot**: A Discord Bot to automate applying or saving configurations for a Discord server.
+* **CLI**: A CLI application to scaffold the files
 
 **The project does not include:**
 

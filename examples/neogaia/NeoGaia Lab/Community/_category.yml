@@ -1,0 +1,5 @@
+id: 23440256-ba31-4b81-9412-e2fd4901e7d9
+permissions:
+  AllowViewChannel:
+    - "@everyone"
+    - luisfuturist
