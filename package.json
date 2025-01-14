@@ -4,13 +4,13 @@
   "description": "A simple tool to clone discord servers",
   "author": "Kruceo",
   "license": "UNLICENSED",
-  "homepage": "https://github.com/neogaialab/manto#readme",
+  "homepage": "https://github.com/9aia/manto#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/neogaialab/manto.git"
+    "url": "git+https://github.com/9aia/manto.git"
   },
   "bugs": {
-    "url": "https://github.com/neogaialab/manto/issues"
+    "url": "https://github.com/9aia/manto/issues"
   },
   "keywords": [
     "discord",
