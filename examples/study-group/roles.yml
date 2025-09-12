@@ -1,0 +1,46 @@
+- name: Study Admin
+  color: "#4b0082"
+  hoist: true
+  mentionable: true
+  permissions:
+    - Administrator
+
+- name: Tutor
+  color: "#228b22"
+  hoist: true
+  mentionable: true
+  permissions:
+    - ManageMessages
+    - ManageChannels
+    - MuteMembers
+    - DeafenMembers
+
+- name: Study Leader
+  color: "#4169e1"
+  hoist: true
+  mentionable: true
+  permissions:
+    - ManageMessages
+    - CreateInstantInvite
+
+- name: Student
+  color: "#32cd32"
+  hoist: false
+  mentionable: false
+  permissions:
+    - SendMessages
+    - ReadMessageHistory
+    - AddReactions
+    - Connect
+    - Speak
+    - UseVAD
+
+- name: Quiet Study
+  color: "#696969"
+  hoist: false
+  mentionable: false
+  permissions:
+    - ReadMessageHistory
+    - ViewChannel
+    - Connect
+    - Speak

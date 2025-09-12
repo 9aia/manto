@@ -1,0 +1,5 @@
+name: welcome
+topic: Welcome to Study Together! Introduce yourself and read the guidelines.
+slow_mode: off
+nsfw: false
+hide_threads_after: 24h

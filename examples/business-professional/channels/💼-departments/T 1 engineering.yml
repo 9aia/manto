@@ -1,0 +1,22 @@
+name: engineering
+topic: "Engineering discussions, code reviews, and technical updates"
+slow_mode: off
+nsfw: false
+hide_threads_after: 3d
+overwrites:
+  - role: "@everyone"
+    permissions:
+      ViewChannel: Deny
+  - role: Employee
+    permissions:
+      ViewChannel: Allow
+      SendMessages: Allow
+      ReadMessageHistory: Allow
+      AddReactions: Allow
+  - role: IT
+    permissions:
+      ViewChannel: Allow
+      SendMessages: Allow
+      ReadMessageHistory: Allow
+      AddReactions: Allow
+      ManageMessages: Allow

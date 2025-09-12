@@ -1,0 +1,5 @@
+name: welcome
+topic: Welcome to Acme Corporation! Please read the company guidelines and introduce yourself.
+slow_mode: off
+nsfw: false
+hide_threads_after: 24h

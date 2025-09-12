@@ -1,0 +1,10 @@
+name: 🎮 Gaming
+overwrites:
+  - role: "@everyone"
+    permissions:
+      ViewChannel: Allow
+      SendMessages: Allow
+      ReadMessageHistory: Allow
+      AddReactions: Allow
+      Connect: Allow
+      Speak: Allow

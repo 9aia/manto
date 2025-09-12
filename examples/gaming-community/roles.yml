@@ -1,0 +1,65 @@
+- name: Server Owner
+  color: "#ff0000"
+  hoist: true
+  mentionable: true
+  permissions:
+    - Administrator
+
+- name: Admin
+  color: "#ff4500"
+  hoist: true
+  mentionable: true
+  permissions:
+    - ManageGuild
+    - ManageChannels
+    - ManageRoles
+    - BanMembers
+    - KickMembers
+
+- name: Moderator
+  color: "#ffff00"
+  hoist: true
+  mentionable: true
+  permissions:
+    - ManageMessages
+    - BanMembers
+    - KickMembers
+    - ManageChannels
+
+- name: Game Master
+  color: "#00ff00"
+  hoist: true
+  mentionable: true
+  permissions:
+    - ManageMessages
+    - ManageChannels
+    - MuteMembers
+    - DeafenMembers
+
+- name: VIP
+  color: "#ff69b4"
+  hoist: true
+  mentionable: true
+  permissions:
+    - PrioritySpeaker
+    - CreateInstantInvite
+
+- name: Member
+  color: "#00bfff"
+  hoist: false
+  mentionable: false
+  permissions:
+    - SendMessages
+    - ReadMessageHistory
+    - AddReactions
+    - Connect
+    - Speak
+    - UseVAD
+
+- name: Muted
+  color: "#808080"
+  hoist: false
+  mentionable: false
+  permissions:
+    - ReadMessageHistory
+    - ViewChannel

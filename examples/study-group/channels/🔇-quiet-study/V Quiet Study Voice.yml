@@ -1,0 +1,16 @@
+name: Quiet Study Voice
+topic: "Silent study room - no talking, only studying"
+slow_mode: off
+nsfw: false
+hide_threads_after: 24h
+overwrites:
+  - role: "@everyone"
+    permissions:
+      ViewChannel: Allow
+      Connect: Allow
+  - role: "@everyone"
+    permissions:
+      Speak: Deny # No talking in quiet study
+  - role: Tutor
+    permissions:
+      Speak: Allow # Tutors can speak if needed

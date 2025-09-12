@@ -1,0 +1,21 @@
+name: hr-private
+topic: Private HR discussions and sensitive matters
+slow_mode: off
+nsfw: false
+hide_threads_after: 1w
+overwrites:
+  - role: "@everyone"
+    permissions:
+      ViewChannel: Deny
+  - role: HR
+    permissions:
+      ViewChannel: Allow
+      SendMessages: Allow
+      ReadMessageHistory: Allow
+      ManageMessages: Allow
+  - role: CEO
+    permissions:
+      ViewChannel: Allow
+      SendMessages: Allow
+      ReadMessageHistory: Allow
+      ManageMessages: Allow

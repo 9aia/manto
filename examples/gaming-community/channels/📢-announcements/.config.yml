@@ -1,0 +1,14 @@
+name: 📢 Announcements
+overwrites:
+  - role: "@everyone"
+    permissions:
+      ViewChannel: Allow
+      ReadMessageHistory: Allow
+      AddReactions: Allow
+  - role: "@everyone"
+    permissions:
+      SendMessages: Deny
+  - role: Admin
+    permissions:
+      SendMessages: Allow
+      ManageMessages: Allow

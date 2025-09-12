@@ -1,5 +1,7 @@
 # Backlog
 
+- Improve doc - simplify it and inform that Manto is dependent on the Discord API (and needs to follow Discord's Discord structure decisions under the hood).
+
 - Add forum channels
 - Add events config
 - Add messages config
