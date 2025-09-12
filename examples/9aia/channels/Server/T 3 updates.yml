@@ -1,0 +1,5 @@
+id: a92bcb2d-0048-4ab3-87b8-3be5d6f7fe90
+overwrites:
+  - role: "@everyone"
+    permissions:
+      AddReactions: Allow

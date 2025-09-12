@@ -3,13 +3,10 @@ additionalProperties: false
 properties:
   id:
     type: string
-    description: The unique identifier for the channel. It is automatically generated.
+    description: The unique identifier for the channel. It is automatically generated, you should not change it unless you know what you are doing.
   name:
     type: string
     description: The desired name for the channel.
-  permissions:
-    $ref: ./permissions.schema.yml
-    description: (Optional) Permissions for this channel.
   topic:
     type: string
     description: (Optional) The channel topic displayed at the top.
@@ -42,4 +39,16 @@ properties:
       - 24h
       - 3d
       - 1w
+  overwrites:
+    type: array
+    description: (Optional) Overwrites for this channel.
+    items:
+      type: object
+      properties:
+        role:
+          type: string
+          description: The role to apply the permissions to.
+        permissions:
+          $ref: ./overwrites-permissions.schema.gen.yml
+          description: (Optional) Permissions for this role within this channel.
 description: Defines a voice channel for the Discord server.

@@ -1,22 +1,23 @@
 {
   "yaml.schemas": {
     "./src/schemas/server.schema.yml": [
-      "**/_server.{yml,yaml}",
-      "**/_guild.{yml,yaml}"
+      "**/server.{yml,yaml}"
     ],
-    "./src/schemas/voice-channel.schema.yml": [
-      "**/voice*.{yml,yaml}"
+    "./src/schemas/roles.schema.yml": [
+      "**/roles.{yml,yaml}"
     ],
     "./src/schemas/category.schema.yml": [
-      "**/_category.{yml,yaml}"
+      "**/channels/*/.config.{yml,yaml}"
     ],
     "./src/schemas/text-channel.schema.yml": [
-      "**/*.{yml,yaml}",
-      "!**/voice*.{yml,yaml}", // Exclude all files starting with "voice "
-      "!**/_*.{yml,yaml}" // Exclude all files starting with an underscore, such as _config.yml
+      "**/channels/*/T*.{yml,yaml}"
+    ],
+    "./src/schemas/voice-channel.schema.yml": [
+      "**/channels/*/V*.{yml,yaml}"
     ]
   },
   "files.exclude": {
+
     "**/.git": true,
     "**/.svn": true,
     "**/.hg": true,

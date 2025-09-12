@@ -27,7 +27,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "release": "release-it",
-    "schema:perms": "bun ./scripts/generate-perms-schema"
+    "schemagen": "bun ./scripts/generate-schemas"
   },
   "dependencies": {
     "discord.js": "^14.14.1",

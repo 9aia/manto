@@ -1,0 +1,8 @@
+id: 8ef72ca2-5bcb-4a86-9d74-9121b7e5826a
+overwrites:
+  - role: "@everyone"
+    permissions:
+      SendMessages: Deny
+  - role: luisfuturist
+    permissions:
+      SendMessages: Allow
