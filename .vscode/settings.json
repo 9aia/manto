@@ -1,18 +1,18 @@
 {
   "yaml.schemas": {
-    "./src/schemas/server.schema.yml": [
+    "./src/schemas/manto-server.json": [
       "**/server.{yml,yaml}"
     ],
-    "./src/schemas/roles.schema.yml": [
+    "./src/schemas/manto-roles.json": [
       "**/roles.{yml,yaml}"
     ],
-    "./src/schemas/category.schema.yml": [
+    "./src/schemas/manto-category.json": [
       "**/channels/*/.config.{yml,yaml}"
     ],
-    "./src/schemas/text-channel.schema.yml": [
+    "./src/schemas/manto-text-channel.json": [
       "**/channels/*/T*.{yml,yaml}"
     ],
-    "./src/schemas/voice-channel.schema.yml": [
+    "./src/schemas/manto-voice-channel.json": [
       "**/channels/*/V*.{yml,yaml}"
     ]
   },

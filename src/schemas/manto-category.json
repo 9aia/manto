@@ -1,0 +1,37 @@
+{
+  "id": "https://manto.9aia.com/schemas/category",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The unique identifier for the category. It is automatically generated, you should not change it unless you know what you are doing."
+    },
+    "name": {
+      "type": "string",
+      "description": "(Optional) Name for the category. If not provided, the name of the category will be the name of the directory."
+    },
+    "overwrites": {
+      "type": "array",
+      "description": "(Optional) Overwrites for this category.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "The role to apply the permissions to."
+          },
+          "permissions": {
+            "$ref": "./manto-overwrites-permissions.gen.jsonc",
+            "description": "(Optional) Permissions for this role within this category."
+          }
+        },
+        "required": [
+          "role"
+        ]
+      }
+    }
+  },
+  "description": "Defines a category for the Discord server."
+}

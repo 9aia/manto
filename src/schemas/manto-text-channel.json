@@ -1,0 +1,75 @@
+{
+  "id": "https://manto.9aia.com/schemas/text-channel",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The unique identifier for the channel. It is automatically generated, you should not change it unless you know what you are doing."
+    },
+    "name": {
+      "type": "string",
+      "description": "The name for the channel. If not provided, the name of the channel will be the name of the file."
+    },
+    "topic": {
+      "type": "string",
+      "description": "(Optional) The channel topic displayed at the top."
+    },
+    "slow_mode": {
+      "type": "string",
+      "description": "The slow mode delay for the channel.",
+      "enum": [
+        "off",
+        "5s",
+        "10s",
+        "15s",
+        "30s",
+        "1m",
+        "2m",
+        "5m",
+        "10m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "6h"
+      ]
+    },
+    "nsfw": {
+      "type": "boolean",
+      "description": "Whether the channel is age-restricted (18+)."
+    },
+    "hide_threads_after": {
+      "type": "string",
+      "description": "The duration after which threads in this channel automatically archive.",
+      "enum": [
+        "1h",
+        "24h",
+        "3d",
+        "1w"
+      ]
+    },
+    "overwrites": {
+      "type": "array",
+      "description": "(Optional) Overwrites for this channel.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "The role to apply the permissions to."
+          },
+          "permissions": {
+            "$ref": "./manto-overwrites-permissions.gen.jsonc",
+            "description": "(Optional) Permissions for this role within this channel."
+          }
+        },
+        "required": [
+          "role"
+        ]
+      }
+    }
+  },
+  "description": "Defines a text channel for the Discord server."
+}
