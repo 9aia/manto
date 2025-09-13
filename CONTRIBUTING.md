@@ -46,3 +46,11 @@ npm i
 - `npm run lint`: Lint the codebase.
 - `npm run lint --fix`: Automatically fix linting issues.
 - `npm run release`: Release new version.
+
+## Running the project
+
+You will need a discord bot token.
+
+```bash
+TOKEN=YourTokenHere ts-node index.ts
+```

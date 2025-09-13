@@ -1,23 +1,5 @@
 {
   "name": "manto",
-  "version": "0.0.0",
-  "description": "A simple tool to clone discord servers",
-  "author": "Kruceo",
-  "license": "UNLICENSED",
-  "homepage": "https://github.com/9aia/manto#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/9aia/manto.git"
-  },
-  "bugs": {
-    "url": "https://github.com/9aia/manto/issues"
-  },
-  "keywords": [
-    "discord",
-    "bot",
-    "clone",
-    "server"
-  ],
   "main": "src/bot/main.ts",
   "scripts": {
     "start": "bun .",
