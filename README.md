@@ -48,7 +48,7 @@ github.com/9aia/discord
 
 ## Roadmap
 
-// WIP
+You can find the roadmap [here](/project/ROADMAP.md).
 
 ---
 

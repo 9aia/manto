@@ -1,5 +1,9 @@
 # Overview
 
+## Description
+
+// TODO: add description
+
 ## Goals
 
 - **Simplify server setup**: Provide a user-friendly method for configuring channels, categories, roles, permissions, and general settings using a familiar file system structure.
