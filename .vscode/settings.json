@@ -79,5 +79,10 @@
   ],
   "editor.tabSize": 2,
 
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  "files.associations": {
+    "**/project/**/*.md": "markdown",
+    "**/docs/**/*.md": "markdown"
+  }
 }

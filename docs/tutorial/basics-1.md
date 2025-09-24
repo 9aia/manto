@@ -1,64 +1,63 @@
-# Getting Started
+# Tutorial: Basics 1
 
-This guide will walk you through creating your first Manto configuration from scratch. By the end, you'll have a complete Discord server configuration ready to deploy.
+This tutorial will walk you through creating your first Manto configuration from scratch. By the end, you'll have a Discord server configured with Manto.
 
 ## Prerequisites
 
 Before you begin, make sure you have:
 - A text editor with YAML support (VS Code, IntelliJ, etc.)
-- Basic understanding of YAML syntax
-- A Discord server where you have administrative permissions
-- The Manto bot token (if deploying)
+- Basic understanding of YAML syntax (recommended)
+- The Manto bot token and a Discord server where you have administrative permissions (if deploying)
 
-## Step 1: Create the Directory Structure
+## Step 1: Install the Manto CLI
+
+// TODO: Add installation instructions
+
+## Step 2: Create the Directory Structure
 
 Start by creating the basic directory structure for your server configuration:
 
 ```bash
-mkdir my-discord-server
-cd my-discord-server
-mkdir channels
-mkdir channels/General
-mkdir channels/Staff
-mkdir files
+manto init --root-dir my-discord-server --yes # yes to all options, just run the script without any prompts
 ```
+
+> [!NOTE]
+> The `--root-dir` option is used to set the root directory of your server configuration. It's not required, but it's a good idea to set it to the name of your server.
 
 Your structure should look like this:
+
 ```
 my-discord-server/
+├── .vscode/
+├── .manto/
 ├── channels/
-│   ├── General/
-│   └── Staff/
-└── files/
+├── files/
+├── roles.yml
+├── server.yml
+├── .gitignore
+└── README.md
 ```
 
-## Step 2: Configure Server Settings
+## Step 2: Open the Project
 
-Create `server.yml` in the root directory:
+Open the project in your text editor. If you're using VS Code, you can run the following command:
+
+```bash
+code my-discord-server
+```
+
+## Step 3: Naming Your Server
+
+Edit `server.yml` in the root directory:
 
 ```yaml
-manto_version: 0.1.0
-name: My Awesome Server
-icon_url: "" # Optional: URL to server icon
-afk_channel: AFK
-afk_timeout: 5min
-system_channel: system
-default_notifications: only_mentions
-enable_premium_progress_bar: true
-banner_url: "" # Optional: URL to server banner
+...
+name: My Awesome Server # Replace with your server's name
 ```
 
-### Key Settings Explained
-- `manto_version`: Always specify the schema version
-- `name`: Your server's display name
-- `afk_channel`: Channel for inactive users (we'll create this)
-- `afk_timeout`: How long before users are considered AFK
-- `system_channel`: Where Discord sends system messages
-- `default_notifications`: Default notification level for new members
+## Step 4: Define Roles
 
-## Step 3: Define Roles
-
-Create `roles.yml` with basic roles:
+Edit `roles.yml` with basic roles:
 
 ```yaml
 - name: Admin
@@ -80,8 +79,6 @@ Create `roles.yml` with basic roles:
 
 - name: Member
   color: "#00ff00"
-  hoist: false
-  mentionable: false
   permissions:
     - SendMessages
     - ReadMessageHistory
@@ -90,58 +87,46 @@ Create `roles.yml` with basic roles:
     - Speak
 ```
 
-### Role Hierarchy
-Roles are applied in the order they appear in the file. The first role (Admin) will have the highest position in Discord.
-
 ## Step 4: Create Categories
 
-### General Category
-Create `channels/General/.config.yml`:
+### Creating the Info Category
 
-```yaml
-name: General
-overwrites:
-  - role: "@everyone"
-    permissions:
-      ViewChannel: Allow
-      SendMessages: Allow
-      ReadMessageHistory: Allow
-      AddReactions: Allow
+You can run the following command to generate the Info category:
+
+```bash
+manto ca a Info
 ```
 
-### Staff Category
-Create `channels/Staff/.config.yml`:
+This will create the category folder (`channels/Info`) and the category configuration file (`channels/Info/.config.yml`) where you can edit it to your liking.
+
+### Deny Everyone from Sending Messages in the Info Category
+
+Edit `channels/Info/.config.yml`:
 
 ```yaml
-name: Staff
+...
 overwrites:
   - role: "@everyone"
     permissions:
-      ViewChannel: Deny
-  - role: Moderator
-    permissions:
-      ViewChannel: Allow
-      SendMessages: Allow
-      ReadMessageHistory: Allow
-  - role: Admin
-    permissions:
-      ViewChannel: Allow
-      SendMessages: Allow
-      ReadMessageHistory: Allow
-      ManageMessages: Allow
+      SendMessages: Deny
 ```
 
 ## Step 5: Create Channels
 
-### Welcome Channel (Uncategorized)
-Create `channels/_/T 1 welcome.yml`:
+### Creating the Welcome Channel
+
+Inside the `Info` category, you can create the welcome channel `T 1 welcome.yml`.
+
+**File Naming Explanation**:
+- `T`: Text channel
+- `1`: Channel order within category
+- `welcome`: Channel name
+
+### Adding Permissions to the Welcome Channel
+
+Edit `channels/Info/T 1 welcome.yml`:
 
 ```yaml
-name: welcome
-topic: Welcome to our server! Please read the rules and introduce yourself.
-slow_mode: off
-nsfw: false
-hide_threads_after: 24h
 overwrites:
   - role: "@everyone"
     permissions:
@@ -294,35 +279,3 @@ Now that you have a basic configuration:
 3. **Fine-tune Permissions**: Adjust permission overrides for specific use cases
 4. **Version Control**: Initialize Git to track changes
 5. **Automate**: Set up automated deployment workflows
-
-## Common Issues and Solutions
-
-### Permission Errors
-- Ensure role names in `overwrites` match exactly with role names in `roles.yml`
-- Check that you have the necessary permissions to create channels/roles
-
-### Validation Errors
-- Verify YAML syntax is correct
-- Ensure all required fields are present
-- Check that enum values match the schema exactly
-
-### Deployment Issues
-- Make sure the bot has sufficient permissions
-- Verify the bot token is correct
-- Check that channel names don't conflict with existing channels
-
----
-
-Congratulations! You've created your first Manto configuration. Your Discord server is now defined as code, ready for version control and automated deployment.
-
-## Next Steps
-
-Now that you have a basic configuration, explore the [Overview](./overview.md) to understand how Manto works.
-
-### Advanced Configuration
-
-Once you're comfortable with the basics, explore:
-- [Advanced Usage](./advanced-usage.md) for complex configurations
-- [Examples](./examples.md) for real-world server setups
-- Custom permission combinations
-- Integration with CI/CD pipelines

@@ -104,4 +104,4 @@ Manto focuses on server structure and configuration, not:
 
 ## Next Steps
 
-Now that you understand Manto's core concepts, learn about the [File Structure](./file-structure.md) to see how to organize your configuration files.
+Now that you understand Manto's core concepts, learn about the [File Structure](./explanations/file-system.md) to understand why Manto uses the file system it does.

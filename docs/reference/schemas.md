@@ -209,8 +209,9 @@ Most modern editors support JSON Schema validation:
 
 ### Command Line
 Manto provides validation tools to check your configuration:
+
 ```bash
-manto check
+manto lint
 ```
 
 ### Common Validation Errors

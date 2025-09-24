@@ -1,6 +1,25 @@
-# File Structure
+# File Structure <!-- omit in toc -->
 
 Manto uses a structured directory layout to represent your Discord server configuration. Understanding this structure is key to effectively using Manto.
+
+## Table of Contents <!-- omit in toc -->
+
+- [Root Directory Structure](#root-directory-structure)
+- [Core Files](#core-files)
+  - [`server.yml`](#serveryml)
+  - [`roles.yml`](#rolesyml)
+- [Channel Organization](#channel-organization)
+  - [Directory Structure](#directory-structure)
+  - [Naming Conventions](#naming-conventions)
+    - [Channel Files](#channel-files)
+    - [Category Directories](#category-directories)
+  - [Category Configuration](#category-configuration)
+- [File Contents](#file-contents)
+  - [Text Channel Configuration](#text-channel-configuration)
+  - [Voice Channel Configuration](#voice-channel-configuration)
+- [Special Directories](#special-directories)
+  - [`.manto/`](#manto)
+  - [`files/`](#files)
 
 ## Root Directory Structure
 
@@ -147,28 +166,3 @@ Directory can be used for storing:
 - Channel attachments
 - Message templates
 - Other static resources
-
-## Best Practices
-
-### Organization
-1. **Group related channels** into logical categories
-2. **Use descriptive names** for categories and channels
-3. **Number channels** to control display order
-
-### Naming
-1. **Be consistent** with naming conventions
-2. **Use clear, descriptive names** for channels
-3. **Avoid special characters** that might cause issues
-4. **Keep names concise** but meaningful
-
-### Structure
-1. **Start simple** and add complexity as needed
-2. **Use categories** to organize channels logically
-
-## Examples
-
-Look at the [Examples](./examples.md) for more detailed examples.
-
-## Next Steps
-
-Now that you understand the file structure, learn about the [Configuration Schemas](./schemas.md) to understand how to properly configure each type of file.
