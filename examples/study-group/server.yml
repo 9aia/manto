@@ -1,8 +1,0 @@
-manto_version: 0.1.0
-name: Study Together
-icon_url: "https://example.com/study-icon.png"
-afk_channel: AFK
-afk_timeout: 30min
-system_channel: announcements
-default_notifications: only_mentions
-enable_premium_progress_bar: false

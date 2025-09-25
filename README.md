@@ -42,9 +42,7 @@ github.com/9aia/discord
 
 ## Documentation
 
-- [Getting Started](/docs/getting-started.md)
-- [Examples](/docs/examples/index.md)
-- [Documentation](/docs/index.md)
+// WIP
 
 ## Roadmap
 

@@ -1,9 +1,0 @@
-manto_version: 0.1.0
-name: Acme Corporation
-icon_url: "https://example.com/company-logo.png"
-afk_channel: AFK
-afk_timeout: 1h
-system_channel: announcements
-default_notifications: only_mentions
-enable_premium_progress_bar: false
-banner_url: "https://example.com/company-banner.png"
