@@ -1,23 +1,23 @@
-import fs from "node:fs"
-import path from "node:path"
-import { basename } from "discord.js"
-import { v4 as uuidv4 } from "uuid"
-import yaml from "yaml"
-import type { MantoCategory, MantoChannel, MantoConfig, MantoGuild, MantoRole, MantoServer } from "./types"
-import { existsYaml, getCategoryConfigData, insertMantoId, parseChannelFileName } from "./utils"
+import type { MantoCategory, MantoChannel, MantoConfig, MantoGuild, MantoRole, MantoServer } from './types'
+import fs from 'node:fs'
+import path from 'node:path'
+import { basename } from 'discord.js'
+import { v4 as uuidv4 } from 'uuid'
+import yaml from 'yaml'
+import { existsYaml, getCategoryConfigData, insertMantoId, parseChannelFileName } from './utils'
 
 export function listLiteralFolders(templatePath: string) {
   return fs.readdirSync(templatePath).filter((file) => {
     const filePath = path.join(templatePath, file)
     const stat = fs.statSync(filePath)
-    return stat.isDirectory() && !file.startsWith("_") && !file.startsWith(".")
+    return stat.isDirectory() && !file.startsWith('_') && !file.startsWith('.')
   })
 }
 
 function readServer(mainFolderPath: string): MantoServer {
   const mainFolderName = path.basename(mainFolderPath)
 
-  let base = existsYaml(mainFolderPath, "_server")
+  let base = existsYaml(mainFolderPath, '_server')
 
   let data: MantoServer | null = null
 
@@ -26,13 +26,13 @@ function readServer(mainFolderPath: string): MantoServer {
       id: uuidv4(),
     } as MantoServer
 
-    const filePath = path.join(mainFolderPath, "_server.yml")
+    const filePath = path.join(mainFolderPath, '_server.yml')
     fs.writeFileSync(filePath, yaml.stringify(data))
-    base = "_server.yml"
+    base = '_server.yml'
   }
   else {
     data = yaml.parse(
-      fs.readFileSync(path.join(mainFolderPath, base), "utf-8"),
+      fs.readFileSync(path.join(mainFolderPath, base), 'utf-8'),
     )
   }
 
@@ -73,8 +73,8 @@ function readCategories(dirPath: string) {
   fs.readdirSync(dirPath).forEach((fileName) => {
     const filePath = path.join(dirPath, fileName)
     const stat = fs.statSync(filePath)
-    const isNonCategory = fileName === "_"
-    const isMeta = fileName.startsWith("_")
+    const isNonCategory = fileName === '_'
+    const isMeta = fileName.startsWith('_')
 
     if (!stat.isDirectory() || (isMeta && !isNonCategory))
       return
@@ -105,14 +105,14 @@ function readChannels(category: MantoCategory) {
 
   fs.readdirSync(category.filePath).forEach((fileName) => {
     const filePath = path.join(category.filePath, fileName)
-    const isMeta = fileName.startsWith("_")
+    const isMeta = fileName.startsWith('_')
     const stat = fs.statSync(filePath)
 
     if (isMeta)
       return
 
     if (!stat.isFile()) {
-      console.log("[WARNING] Invalid file in category folder: ", filePath)
+      console.log('[WARNING] Invalid file in category folder: ', filePath)
       return
     }
 
@@ -123,7 +123,7 @@ function readChannels(category: MantoCategory) {
 
     const { name, type } = parseChannelFileName(fileName)
 
-    const data = yaml.parse(fs.readFileSync(path.join(category.filePath, base), "utf-8"))
+    const data = yaml.parse(fs.readFileSync(path.join(category.filePath, base), 'utf-8'))
 
     channels.push({
       id: uuidv4(),

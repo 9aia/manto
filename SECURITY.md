@@ -12,12 +12,12 @@ If you discover a security vulnerability in any part of the project, please **do
 
 In your email, please include the following information:
 
-* A detailed description of the vulnerability.
-* Clear steps to reproduce the issue.
-* Any relevant screenshots, logs, or proof-of-concept code.
-* An assessment of the potential impact.
-* Your contact information for follow-up.
-* If you can provide a patch or a suggested fix, it will be greatly appreciated, but it is not mandatory.
+- A detailed description of the vulnerability.
+- Clear steps to reproduce the issue.
+- Any relevant screenshots, logs, or proof-of-concept code.
+- An assessment of the potential impact.
+- Your contact information for follow-up.
+- If you can provide a patch or a suggested fix, it will be greatly appreciated, but it is not mandatory.
 
 We value the contributions of the security community to keep the project secure. All legitimate reports will be thoroughly investigated and addressed with appropriate urgency.
 
@@ -25,7 +25,7 @@ We value the contributions of the security community to keep the project secure.
 
 To ensure maximum security, only the **latest production version** of the project is officially supported and receives continuous security updates.
 
-* **Preview and Older Versions**: Pre-release versions and versions older than the latest production release may contain known vulnerabilities and are not actively maintained for security purposes. We will try our best to support them, but we cannot guarantee it. We encourage you to update to the latest version.
+- **Preview and Older Versions**: Pre-release versions and versions older than the latest production release may contain known vulnerabilities and are not actively maintained for security purposes. We will try our best to support them, but we cannot guarantee it. We encourage you to update to the latest version.
 
 ## 3. Security Updates
 
@@ -39,6 +39,6 @@ To ensure the security of this project, we recommend reviewing the [OWASP Top Te
 
 Our commitment to you:
 
-* **Prompt Acknowledgment**: We commit to acknowledging receipt of your report as soon as possible, generally within **1 business day**.
-* **Collaboration and Resolution**: We will work with you to validate and resolve the issue with appropriate urgency. We will keep you informed of our progress.
-* **Recognition**: We will grant due credit for your contribution, if desired and after the vulnerability has been fixed, in a dedicated contributors section of the project.
+- **Prompt Acknowledgment**: We commit to acknowledging receipt of your report as soon as possible, generally within **1 business day**.
+- **Collaboration and Resolution**: We will work with you to validate and resolve the issue with appropriate urgency. We will keep you informed of our progress.
+- **Recognition**: We will grant due credit for your contribution, if desired and after the vulnerability has been fixed, in a dedicated contributors section of the project.

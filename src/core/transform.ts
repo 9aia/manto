@@ -1,13 +1,13 @@
-import type { Guild } from "discord.js"
-import type { ApplicableConfig, MantoConfig, MantoOptions } from "./types"
-import { ChannelType, HideThreadAfter, InactiveUserTimeout, SlowMode, getAfkChannelId, getSystemChannelId, readMantoFile } from "./utils"
+import type { Guild } from 'discord.js'
+import type { ApplicableConfig, MantoConfig, MantoOptions } from './types'
+import { ChannelType, getAfkChannelId, getSystemChannelId, HideThreadAfter, InactiveUserTimeout, readMantoFile, SlowMode } from './utils'
 
 export async function transformConfig(
   guild: Guild,
   config: MantoConfig,
   options: MantoOptions,
 ): Promise<ApplicableConfig> {
-  const rootDir = options.rootDir || "./"
+  const rootDir = options.rootDir || './'
 
   const aConfig = {} as ApplicableConfig
   const ids = readMantoFile(rootDir)
@@ -26,11 +26,11 @@ export async function transformConfig(
       name: g.name,
       icon: g.icon_url || null,
       banner: g.banner_url || null,
-      defaultMessageNotifications: g.default_notifications === "all_messages" ? 0 : 1,
+      defaultMessageNotifications: g.default_notifications === 'all_messages' ? 0 : 1,
       premiumProgressBarEnabled: Boolean(g.enable_premium_progress_bar),
       systemChannel: systemChannelId,
       afkChannel: afkChannelId,
-      afkTimeout: InactiveUserTimeout[g.afk_timeout || "5min"] as unknown as number,
+      afkTimeout: InactiveUserTimeout[g.afk_timeout || '5min'] as unknown as number,
     }
   }
 
@@ -77,9 +77,9 @@ export async function transformConfig(
       name: c.name,
       topic: c.topic,
       nsfw: Boolean(c.nsfw),
-      type: ChannelType[channelType || "TEXT"] as unknown as number,
-      rateLimitPerUser: SlowMode[c.slow_mode || "off"] as unknown as number,
-      defaultThreadRateLimitPerUser: HideThreadAfter[c.hide_threads_after || "1h"] as unknown as number,
+      type: ChannelType[channelType || 'TEXT'] as unknown as number,
+      rateLimitPerUser: SlowMode[c.slow_mode || 'off'] as unknown as number,
+      defaultThreadRateLimitPerUser: HideThreadAfter[c.hide_threads_after || '1h'] as unknown as number,
     }
   })
 

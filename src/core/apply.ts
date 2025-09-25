@@ -1,15 +1,15 @@
-import path from "node:path"
-import type { Guild, GuildChannelEditOptions } from "discord.js"
-import { ChannelType as _DiscordChannelType } from "discord.js"
-import type { ApplicableCategory, ApplicableChannel, ApplicableConfig, ApplicableRole, MantoOptions } from "./types"
-import { existsYaml, insertMantoId, insertRoleMantoId, parseChannelFileName, prepareOptions, readMantoFile, resolveChannelPerms, saveMantoFile } from "./utils"
+import type { Guild, GuildChannelEditOptions } from 'discord.js'
+import type { ApplicableCategory, ApplicableChannel, ApplicableConfig, ApplicableRole, MantoOptions } from './types'
+import path from 'node:path'
+import { ChannelType as _DiscordChannelType } from 'discord.js'
+import { existsYaml, insertMantoId, insertRoleMantoId, parseChannelFileName, prepareOptions, readMantoFile, resolveChannelPerms, saveMantoFile } from './utils'
 
 export async function applyConfig(
   guild: Guild,
   aConfig: ApplicableConfig,
   options?: MantoOptions,
 ) {
-  const rootDir = options?.rootDir || "./"
+  const rootDir = options?.rootDir || './'
 
   applyGuild(guild, aConfig)
   await applyRoles(guild, aConfig, rootDir)
@@ -89,9 +89,9 @@ export async function applyChannels(
     const c = await guild.channels.create(options)
     bind[cat.mantoId] = c.id
 
-    let base = existsYaml(cat.mantoPath!, "_category")
+    let base = existsYaml(cat.mantoPath!, '_category')
     if (base == null)
-      base = "_category.yml"
+      base = '_category.yml'
 
     insertMantoId(path.join(cat.mantoPath!, base), cat.mantoId)
 
@@ -100,7 +100,7 @@ export async function applyChannels(
 
   const applyCategories = async () => {
     for (const c of aConfig.categories) {
-      const isNonCategory = c.name === "_"
+      const isNonCategory = c.name === '_'
       if (isNonCategory)
         continue
 
@@ -153,7 +153,7 @@ export async function applyChannels(
 
       const { name, type } = parseChannelFileName(channel.name!)
 
-      if (type === "text")
+      if (type === 'text')
         console.log(`[INFO] Text channel '${name}' (${channel.mantoId}) has been created`)
       else
         console.log(`[INFO] Voice channel '${name}' (${channel.mantoId}) has been created`)

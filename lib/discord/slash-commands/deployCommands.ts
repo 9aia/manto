@@ -1,6 +1,6 @@
-import process from "node:process"
-import type { Client, REST, SlashCommandBuilder } from "discord.js"
-import { Routes } from "discord.js"
+import type { Client, REST, SlashCommandBuilder } from 'discord.js'
+import process from 'node:process'
+import { Routes } from 'discord.js'
 
 async function deployCommands(client: Client, rest: REST) {
   try {

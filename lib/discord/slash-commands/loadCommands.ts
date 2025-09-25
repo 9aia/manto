@@ -1,16 +1,16 @@
-import { join } from "node:path"
-import { readdirSync } from "node:fs"
-import type { Client } from "discord.js"
+import type { Client } from 'discord.js'
+import { readdirSync } from 'node:fs'
+import { join } from 'node:path'
 
 async function loadCommands(client: Client, folderPath: string) {
-  const commandsFolder = readdirSync(folderPath).filter(file => file.endsWith(".ts"))
+  const commandsFolder = readdirSync(folderPath).filter(file => file.endsWith('.ts'))
 
   for (const file of commandsFolder) {
     const filePath = join(folderPath, file)
     const command = await import(filePath)
 
     // Set a new item in the Collection with the key as the command name and the value as the exported module
-    if ("data" in command && "execute" in command)
+    if ('data' in command && 'execute' in command)
       client.commands.set(command.data.name, command)
 
     else
