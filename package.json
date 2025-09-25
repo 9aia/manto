@@ -9,9 +9,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "release": "release-it",
-    "schemagen": "bun ./scripts/generate-schemas"
+    "schemagen": "bun ./scripts/generate-schemas",
+    "start:cli": "bun ./src/cli/main.ts"
   },
   "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "clipanion": "^4.0.0-rc.4",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "uuid": "^10.0.0",
