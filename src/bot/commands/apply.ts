@@ -1,22 +1,22 @@
-import { existsSync } from "node:fs"
-import path from "node:path"
-import { SlashCommandBuilder } from "discord.js"
-import type { ExecuteFn } from "../../../lib/discord/slash-commands/types"
-import { DEFAULT_TEMPLATE_PATH } from "../../core/ambient"
-import { applyConfig } from "../../core/apply"
-import { listLiteralFolders, readConfig } from "../../core/read"
-import { transformConfig } from "../../core/transform"
+import type { ExecuteFn } from '../../../lib/discord/slash-commands/types'
+import { existsSync } from 'node:fs'
+import path from 'node:path'
+import { SlashCommandBuilder } from 'discord.js'
+import { DEFAULT_TEMPLATE_PATH } from '../../core/ambient'
+import { applyConfig } from '../../core/apply'
+import { listLiteralFolders, readConfig } from '../../core/read'
+import { transformConfig } from '../../core/transform'
 
 export const data = new SlashCommandBuilder()
-  .setName("apply")
-  .setDescription("Update the server based on a template.")
+  .setName('apply')
+  .setDescription('Update the server based on a template.')
   .addStringOption(o => o
-    .setName("template-path")
-    .setDescription("Template path to be used."),
+    .setName('template-path')
+    .setDescription('Template path to be used.'),
   )
 
 export const execute: ExecuteFn = async (inter) => {
-  const templatePath = inter.options.getString("template-path") as string
+  const templatePath = inter.options.getString('template-path') as string
   const rootDir = templatePath || DEFAULT_TEMPLATE_PATH
 
   if (!existsSync(rootDir)) {
@@ -34,10 +34,10 @@ export const execute: ExecuteFn = async (inter) => {
   const literalFolders = listLiteralFolders(rootDir)
 
   if (literalFolders.length === 0)
-    await inter.editReply({ content: "Warning: No main folder found." })
+    await inter.editReply({ content: 'Warning: No main folder found.' })
 
   if (literalFolders.length > 1) {
-    await inter.editReply({ content: "Error: Multiple main folders found." })
+    await inter.editReply({ content: 'Error: Multiple main folders found.' })
     return
   }
 
@@ -48,5 +48,5 @@ export const execute: ExecuteFn = async (inter) => {
   const applicable = await transformConfig(inter.guild, config, { rootDir })
   await applyConfig(inter.guild, applicable, { rootDir })
 
-  await inter.editReply({ content: "Server has been updated." })
+  await inter.editReply({ content: 'Server has been updated.' })
 }

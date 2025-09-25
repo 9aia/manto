@@ -1,8 +1,5 @@
-import type { Signal } from "@preact/signals-core"
-import type { Channel, GuildBasedChannel, GuildChannelEditOptions, GuildEditOptions, PermissionResolvable, Role, RoleEditOptions, TextChannel } from "discord.js"
-import type { CategoryChannel } from "discord.js"
-import type { readConfig } from "./read"
-import type { HideThreadAfter, SlowMode } from "./utils"
+import type { GuildChannelEditOptions, GuildEditOptions, PermissionResolvable, RoleEditOptions } from 'discord.js'
+import type { HideThreadAfter, SlowMode } from './utils'
 
 // #region Manto
 
@@ -13,7 +10,7 @@ export interface MantoGuild {
   system_channel?: string
   afk_channel?: string
   afk_timeout?: InactiveUserTimeout
-  default_notifications?: "all_messages" | "only_mentions"
+  default_notifications?: 'all_messages' | 'only_mentions'
   enable_premium_progress_bar?: string
   banner_url?: string
   filePath: string
@@ -42,7 +39,7 @@ export interface MantoCategory {
   filePath: string
 }
 
-export type ChannelType = "voice" | "text"
+export type ChannelType = 'voice' | 'text'
 
 export interface MantoChannel {
   id: string
@@ -121,8 +118,8 @@ export interface ApplicableConfig {
 // #region Reader
 
 export enum MetaType {
-  CATEGORY = "_category",
-  PERMS = "_perms",
+  CATEGORY = '_category',
+  PERMS = '_perms',
 }
 
 export interface FsRes {

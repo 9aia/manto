@@ -29,6 +29,7 @@ github.com/9aia/discord
 ```
 
 **File Naming Convention:**
+
 - `T` prefix: Text channels
 - `V` prefix: Voice channels
 - Numbers indicate channel order within categories

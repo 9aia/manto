@@ -12,5 +12,5 @@
 - $ manto init
 - $ manto push
 - $ manto pull
-- $ manto perms sync "showcase-*"
+- $ manto perms sync "showcase-\*"
   - Channel that matches the pattern will be synced within the respective category
