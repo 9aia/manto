@@ -1,8 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import { confirm } from '@clack/prompts'
+import { confirm, text } from '@clack/prompts'
 import { Command, Option } from 'clipanion'
+import { scaffold } from '../utils/scaffold'
+
+const DIR_PATH_REGEX = /^(?:[a-z]:\\|\.{1,2}[\\/]|[\\/])?[^<>:"|?*\n]*$/i
 
 export class InitCommand extends Command {
   static paths = [['init']]
@@ -10,17 +13,23 @@ export class InitCommand extends Command {
   rootDir = Option.String({ required: false })
 
   async execute() {
+    if (!this.rootDir) {
+      const answer = await text({
+        message: 'Where do you wanna create the MANTO project?',
+        placeholder: './',
+        validate: value => !DIR_PATH_REGEX.test(value) ? 'This should be a valid directory path.' : undefined,
+        initialValue: './',
+      })
+      this.rootDir = String(answer)
+    }
     const rootDir = this.rootDir ?? '.'
     const fullPath = path.resolve(process.cwd(), rootDir)
 
     try {
-      const stats = fs.statSync(fullPath)
-
-      if (stats) {
+      if (fs.existsSync(fullPath)) {
         const message = process.cwd() === fullPath
-          ? 'Current folder is not empty. Do you want to continue? Files may be deleted. '
-          : `${this.rootDir} exists. Do you want to continue? Files may be deleted.`
-
+          ? 'Current folder is not empty. Do you want to continue? Files may be overwritten. '
+          : `${this.rootDir} exists. Do you want to continue? Files may be overwritten.`
         const shouldContinue = await confirm({
           message,
         })
@@ -29,7 +38,7 @@ export class InitCommand extends Command {
         }
       }
 
-      fs.mkdirSync(fullPath, { recursive: true })
+      await scaffold(rootDir)
       this.context.stdout.write(`Pasta criada: ${fullPath}\n`)
     }
     catch (err: any) {
