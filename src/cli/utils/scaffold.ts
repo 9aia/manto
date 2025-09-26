@@ -43,11 +43,46 @@ const roles = [
   },
 ]
 
+const channels = {
+  _: {
+    'T 1 welcome.yml': {
+      topic: 'A channel for new members to learn about the server and get started.',
+    },
+  },
+  Community: {
+    'T 1 general.yml': {
+      topic: 'General discussion and chat',
+    },
+    'V Voice-1.yml ': {
+      topic: 'Main voice channel for general discussion',
+    },
+  },
+  Server: {
+    'T 1 rules.yml': {
+      topic: 'Official server rules and guidelines.',
+    },
+    'V AFK.yml': {
+      topic: 'You\'ve been moved here due to inactivity',
+    },
+  },
+}
+
+async function scaffoldChannels(rootDir: string) {
+  Object.keys(channels).forEach((categoryName) => {
+    fs.mkdirSync(path.resolve(rootDir, 'channels', categoryName), { recursive: true })
+    fs.writeFileSync(path.resolve(rootDir, 'channels', categoryName, '.config.yml'), '')
+    Object.keys(channels[categoryName]).forEach((channelName) => {
+      const content = channels[categoryName][channelName]
+      fs.writeFileSync(path.resolve(rootDir, 'channels', categoryName, channelName), yaml.stringify(content))
+    })
+  })
+}
+
 export async function scaffold(rootDir: string) {
   fs.mkdirSync(path.resolve(rootDir), { recursive: true })
   fs.writeFileSync(path.resolve(rootDir, 'server.yml'), yaml.stringify(serverYmlContent))
   fs.writeFileSync(path.resolve(rootDir, 'roles.yml'), yaml.stringify(roles))
-  fs.mkdirSync(path.resolve(rootDir, 'channels/_'), { recursive: true })
+  scaffoldChannels(rootDir)
   fs.mkdirSync(path.resolve(rootDir, 'files'), { recursive: true })
 
   const logoBytes = await file(logoManto).arrayBuffer()
