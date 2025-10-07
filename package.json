@@ -1,5 +1,6 @@
 {
   "name": "manto",
+  "version": "0.0.0",
   "main": "src/bot/main.ts",
   "scripts": {
     "start": "bun .",
