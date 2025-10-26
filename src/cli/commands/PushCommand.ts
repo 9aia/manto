@@ -25,7 +25,7 @@ export class PushCommand extends DjsCommand {
       return
     }
 
-    await super.execute()
+    await this.initializeDiscordClientManager()
 
     if (this.dangerouslyClean) {
       const args = [
