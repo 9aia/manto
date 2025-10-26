@@ -1,6 +1,7 @@
 import process from 'node:process'
 import { Builtins, Cli } from 'clipanion'
 import packageJson from '../../package.json'
+import { InitCommand } from './commands/init'
 import { PushCommand } from './commands/PushCommand'
 
 process.on('SIGINT', () => {
@@ -15,6 +16,7 @@ const cli = new Cli({
 })
 
 cli.register(PushCommand)
+cli.register(InitCommand)
 cli.register(Builtins.HelpCommand)
 cli.register(Builtins.VersionCommand)
 
