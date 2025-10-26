@@ -1,7 +1,7 @@
+import { BaseContext } from 'clipanion'
 import type { Client } from 'discord.js'
 import { DiscordClientManager } from '../../bot/client'
 import { BaseCommand } from './BaseCommand'
-import { BaseContext } from 'clipanion'
 
 let discordClientManager: DiscordClientManager | null = null
 
@@ -9,7 +9,7 @@ export abstract class DjsCommand<C extends BaseContext = BaseContext> extends Ba
 
   getDiscordClient() {
     if (!discordClientManager) {
-      throw new Error('Discord client manager not initialized. Call `await super.execute()` at the start of your execute method.')
+      throw new Error('Discord client manager not initialized. Call `await initializeDiscordClientManager()` at the start of your execute method.')
     }
 
     return discordClientManager.getClient()
@@ -25,7 +25,7 @@ export abstract class DjsCommand<C extends BaseContext = BaseContext> extends Ba
     })
   }
 
-  private async initializeDiscordClientManager() {
+  async initializeDiscordClientManager() {
     if (discordClientManager) {
       return
     }
@@ -47,9 +47,5 @@ export abstract class DjsCommand<C extends BaseContext = BaseContext> extends Ba
     discordClientManager = null
 
     this.logger.debug('Discord client manager terminated')
-  }
-
-  async execute() {
-    await this.initializeDiscordClientManager()
   }
 }

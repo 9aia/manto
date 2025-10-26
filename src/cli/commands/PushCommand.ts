@@ -10,6 +10,15 @@ export class PushCommand extends DjsCommand {
     description: 'Dry run the command, don\'t apply the changes to the server.',
   })
 
+  dangerouslyClean = Option.Boolean('--dangerously-clean,-dc', {
+    description: 'Clean the server. This is a dangerous operation and will remove all channels, categories and roles.',
+  })
+
+  guildId = Option.String('--guild-id,-g', {
+    description: 'ID of the guild to clean. If not provided, all guilds the bot is in will be cleaned.',
+    required: false,
+  })
+
   async execute() {
     if (!DIR_PATH_REGEX.test(this.rootDir)) {
       this.logger.error(`Invalid root directory: ${this.rootDir}`)
@@ -17,6 +26,15 @@ export class PushCommand extends DjsCommand {
     }
 
     await super.execute()
+
+    if (this.dangerouslyClean) {
+      const args = [
+        this.dryRun ? '--dry-run' : undefined,
+        this.guildId ? `--guild-id ${this.guildId}` : undefined,
+      ].filter(Boolean) as string[]
+
+      return await this.cli.run(['clean', ...args])
+    }
 
     const client = this.getDiscordClient()
 

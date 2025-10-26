@@ -1,6 +1,7 @@
 import process from 'node:process'
 import { Builtins, Cli } from 'clipanion'
 import packageJson from '../../package.json'
+import { CleanCommand } from './commands/CleanCommand'
 import { InitCommand } from './commands/InitCommand'
 import { PushCommand } from './commands/PushCommand'
 
@@ -16,6 +17,7 @@ const cli = new Cli({
 })
 
 cli.register(PushCommand)
+cli.register(CleanCommand)
 cli.register(InitCommand)
 cli.register(Builtins.HelpCommand)
 cli.register(Builtins.VersionCommand)
