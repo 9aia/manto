@@ -71,8 +71,8 @@ async function scaffoldChannels(rootDir: string) {
   Object.keys(channels).forEach((categoryName) => {
     fs.mkdirSync(path.resolve(rootDir, 'channels', categoryName), { recursive: true })
     fs.writeFileSync(path.resolve(rootDir, 'channels', categoryName, '.config.yml'), '')
-    Object.keys(channels[categoryName]).forEach((channelName) => {
-      const content = channels[categoryName][channelName]
+    Object.keys((channels as any)[categoryName]).forEach((channelName) => {
+      const content = (channels as any)[categoryName][channelName]
       fs.writeFileSync(path.resolve(rootDir, 'channels', categoryName, channelName), yaml.stringify(content))
     })
   })

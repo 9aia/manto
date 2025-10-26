@@ -18,7 +18,7 @@ export class InitCommand extends Command {
   async execute() {
     if (!this.rootDir) {
       const answer = await text({
-        message: 'Where do you wanna create the MANTO project?',
+        message: 'Where do you wanna create the Manto project?',
         placeholder: './',
         validate: value => !DIR_PATH_REGEX.test(value) ? 'This should be a valid directory path.' : undefined,
         initialValue: './',
@@ -43,10 +43,10 @@ export class InitCommand extends Command {
       }
 
       await scaffold(rootDir)
-      this.context.stdout.write(`Pasta criada: ${fullPath}\n`)
+      this.context.stdout.write(`Manto project scaffolded at ${fullPath}\n`)
     }
-    catch (err: any) {
-      this.context.stderr.write(`Erro: ${err.message}\n`)
+    catch (err) {
+      this.context.stderr.write(`Failed to scaffold Manto project: ${(err as Error).message}\n`)
       return 1
     }
 
@@ -55,9 +55,14 @@ export class InitCommand extends Command {
       initialValue: false,
     })
     if (shouldGitInit) {
-      await git.cwd(fullPath)
-      await git.init()
-      this.context.stdout.write('Git repository initialized.\n')
+      try {
+        await git.cwd(fullPath)
+        await git.init()
+        this.context.stdout.write('Git repository initialized.\n')
+      }
+      catch (error) {
+        this.context.stderr.write(`Failed to initialize git repository: ${(error as Error).message}\n`)
+      }
     }
   }
 }
