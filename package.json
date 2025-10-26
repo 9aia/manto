@@ -10,17 +10,23 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "release": "release-it",
-    "schemagen": "bun ./scripts/generate-schemas"
+    "schemagen": "bun ./scripts/generate-schemas",
+    "start:cli": "bun ./src/cli/main.ts"
   },
   "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "clipanion": "^4.0.0-rc.4",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
+    "simple-git": "^3.28.0",
     "uuid": "^10.0.0",
     "yaml": "^2.4.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^5.4.1",
     "@release-it/keep-a-changelog": "^5.0.0",
+    "@types/bun": "^1.2.22",
+    "@types/node": "^24.5.2",
     "@types/uuid": "^10.0.0",
     "@types/yaml": "^1.9.7",
     "eslint": "^8.57.0",
