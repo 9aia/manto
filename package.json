@@ -17,6 +17,7 @@
     "clipanion": "^4.0.0-rc.4",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
+    "simple-git": "^3.28.0",
     "uuid": "^10.0.0",
     "yaml": "^2.4.1"
   },

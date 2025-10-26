@@ -3,9 +3,12 @@ import path from 'node:path'
 import process from 'node:process'
 import { confirm, text } from '@clack/prompts'
 import { Command, Option } from 'clipanion'
+import { simpleGit } from 'simple-git'
 import { scaffold } from '../utils/scaffold'
 
 const DIR_PATH_REGEX = /^(?:[a-z]:\\|\.{1,2}[\\/]|[\\/])?[^<>:"|?*\n]*$/i
+
+const git = simpleGit()
 
 export class InitCommand extends Command {
   static paths = [['init']]
@@ -32,6 +35,7 @@ export class InitCommand extends Command {
           : `${this.rootDir} exists. Do you want to continue? Files may be overwritten.`
         const shouldContinue = await confirm({
           message,
+          initialValue: false,
         })
         if (!shouldContinue) {
           return 0
@@ -44,6 +48,16 @@ export class InitCommand extends Command {
     catch (err: any) {
       this.context.stderr.write(`Erro: ${err.message}\n`)
       return 1
+    }
+
+    const shouldGitInit = await confirm({
+      message: 'Do you want to initialize a git repository?',
+      initialValue: false,
+    })
+    if (shouldGitInit) {
+      await git.cwd(fullPath)
+      await git.init()
+      this.context.stdout.write('Git repository initialized.\n')
     }
   }
 }
