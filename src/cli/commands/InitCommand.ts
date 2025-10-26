@@ -2,15 +2,15 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { confirm, text } from '@clack/prompts'
-import { Command, Option } from 'clipanion'
+import { Option } from 'clipanion'
 import { simpleGit } from 'simple-git'
+import { DIR_PATH_REGEX } from '../constants/regex'
+import { BaseCommand } from '../lib/BaseCommand'
 import { scaffold } from '../utils/scaffold'
-
-const DIR_PATH_REGEX = /^(?:[a-z]:\\|\.{1,2}[\\/]|[\\/])?[^<>:"|?*\n]*$/i
 
 const git = simpleGit()
 
-export class InitCommand extends Command {
+export class InitCommand extends BaseCommand {
   static paths = [['init']]
 
   rootDir = Option.String({ required: false })
@@ -43,10 +43,10 @@ export class InitCommand extends Command {
       }
 
       await scaffold(rootDir)
-      this.context.stdout.write(`Manto project scaffolded at ${fullPath}\n`)
+      this.logger.info(`Manto project scaffolded at ${fullPath}`)
     }
     catch (err) {
-      this.context.stderr.write(`Failed to scaffold Manto project: ${(err as Error).message}\n`)
+      this.logger.error(`Failed to scaffold Manto project: ${(err as Error).message}`)
       return 1
     }
 
@@ -58,11 +58,15 @@ export class InitCommand extends Command {
       try {
         await git.cwd(fullPath)
         await git.init()
-        this.context.stdout.write('Git repository initialized.\n')
+        this.logger.info('Git repository initialized.')
       }
       catch (error) {
-        this.context.stderr.write(`Failed to initialize git repository: ${(error as Error).message}\n`)
+        this.logger.error(`Failed to initialize git repository: ${(error as Error).message}`)
+        return 1
       }
     }
+
+    this.logger.info('Manto project initialized successfully.')
+    return 0
   }
 }

@@ -1,7 +1,7 @@
 import process from 'node:process'
 import { Builtins, Cli } from 'clipanion'
 import packageJson from '../../package.json'
-import { InitCommand } from './commands/init'
+import { InitCommand } from './commands/InitCommand'
 import { PushCommand } from './commands/PushCommand'
 
 process.on('SIGINT', () => {

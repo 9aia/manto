@@ -19,9 +19,9 @@ export class DiscordClientManager {
       return
     }
 
-    if (!process.env.DISCORD_BOT_TOKEN)
-      console.error('No DISCORD_BOT_TOKEN provided')
-    
+    if (!process.env.DISCORD_BOT_TOKEN) {
+      throw new Error('No DISCORD_BOT_TOKEN provided')
+    }
     
     this.client = new Client({
       intents: [
@@ -42,6 +42,16 @@ export class DiscordClientManager {
     })
     await this.initPromise
     this.isInitialized = true
+  }
+
+  async terminate() {
+    if (!this.client) {
+      return
+    }
+    await this.client.destroy()
+    this.client = null
+    this.isInitialized = false
+    this.initPromise = null
   }
 
   getClient() {

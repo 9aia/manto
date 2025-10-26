@@ -1,39 +1,52 @@
 import type { Client } from 'discord.js'
-import { Command } from 'clipanion'
 import { DiscordClientManager } from '../../bot/client'
+import { BaseCommand } from './BaseCommand'
+import { BaseContext } from 'clipanion'
 
-export abstract class DjsCommand extends Command {
-  private discordClientManager: DiscordClientManager | null = null
+let discordClientManager: DiscordClientManager | null = null
+
+export abstract class DjsCommand<C extends BaseContext = BaseContext> extends BaseCommand<C> {
 
   getDiscordClient() {
-    if (!this.discordClientManager) {
-      throw new Error('Discord client manager not initialized. Call `await super.execute()` first at the start of the command.')
+    if (!discordClientManager) {
+      throw new Error('Discord client manager not initialized. Call `await super.execute()` at the start of your execute method.')
     }
 
-    return this.discordClientManager.getClient()
+    return discordClientManager.getClient()
   }
 
   private setupEventHandlers(client: Client) {
     client.on('ready', () => {
-      console.log('Logged in with', client.user?.username)
+      this.logger.debug(`Logged in with ${client.user?.username}`)
     })
 
     client.on('error', (err) => {
-      console.error('Error\n', err)
+      this.logger.error(`Discord client error: ${err}`)
     })
   }
 
   private async initializeDiscordClientManager() {
-    if (this.discordClientManager) {
+    if (discordClientManager) {
       return
     }
 
-    this.discordClientManager = new DiscordClientManager({
+    discordClientManager = new DiscordClientManager({
       onClientCreated: (client) => {
         this.setupEventHandlers(client)
       },
     })
-    await this.discordClientManager.initialize()
+    await discordClientManager.initialize()
+  }
+
+  async terminateDiscordClientManager() {
+    if (!discordClientManager) {
+      return
+    }
+
+    await discordClientManager.terminate()
+    discordClientManager = null
+
+    this.logger.debug('Discord client manager terminated')
   }
 
   async execute() {
