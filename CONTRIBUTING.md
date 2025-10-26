@@ -14,8 +14,7 @@ Thank you for considering contributing to Manto! We welcome contributions from t
 
 We use the following tools for development:
 
-- [Node.js](https://nodejs.org/en/download)
-- [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+- [Bun](https://bun.sh/docs/installation)
 - [Git](https://git-scm.com/downloads)
 - [Vscode](https://code.visualstudio.com/download) (optional)
 - [YAML for Vscode](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) (optional)
@@ -25,7 +24,7 @@ We use the following tools for development:
 ```bash
 git clone https://github.com/9aia/manto
 cd manto
-npm i
+bun install
 ```
 
 ### Committing
@@ -40,17 +39,17 @@ npm i
 
 ### Scripts
 
-- `npm run start`: Start.
-- `npm run dev`: Start in watch mode.
-- `npm run build`: Build for production with minification and sourcemaps.
-- `npm run lint`: Lint the codebase.
-- `npm run lint --fix`: Automatically fix linting issues.
-- `npm run release`: Release new version.
+- `bun run start`: Start.
+- `bun run dev`: Start in watch mode.
+- `bun run build`: Build for production with minification and sourcemaps.
+- `bun run lint`: Lint the codebase.
+- `bun run lint --fix`: Automatically fix linting issues.
+- `bun run release`: Release new version.
 
 ## Running the project
 
-You will need a discord bot token.
+You will need a discord bot token and put it in a `.env` file.
 
 ```bash
-TOKEN=YourTokenHere ts-node index.ts
+bun run src/bot/main.ts
 ```

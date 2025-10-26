@@ -3,15 +3,14 @@
   "version": "0.0.0",
   "main": "src/bot/main.ts",
   "scripts": {
-    "start": "bun .",
-    "dev": "bun --watch src/bot/main.ts",
+    "start": "bun ./src/cli/main.ts",
+    "dev": "bun --watch ./src/cli/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "echo \"Error: no build specified\" && exit 1",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "release": "release-it",
-    "schemagen": "bun ./scripts/generate-schemas",
-    "start:cli": "bun ./src/cli/main.ts"
+    "schemagen": "bun ./scripts/generate-schemas"
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
