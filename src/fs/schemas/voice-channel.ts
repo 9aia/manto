@@ -7,7 +7,7 @@ import { baseChannelSchema } from './components/channel'
  */
 export const mantoVoiceChannelSchema = baseChannelSchema
   .describe('Defines a voice channel for the Discord server.')
-export type MantoVoiceChannelSchema = z.infer<typeof mantoVoiceChannelSchema>
+export type MantoVoiceChannel = z.infer<typeof mantoVoiceChannelSchema>
 
 export const MANTO_SCHEMA: MantoSchema = {
   id: 'voice-channel',

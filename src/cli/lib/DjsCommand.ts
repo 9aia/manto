@@ -1,4 +1,4 @@
-import { BaseContext } from 'clipanion'
+import type { BaseContext } from 'clipanion'
 import type { Client } from 'discord.js'
 import { DiscordClientManager } from '../../bot/client'
 import { BaseCommand } from './BaseCommand'
@@ -6,13 +6,12 @@ import { BaseCommand } from './BaseCommand'
 let discordClientManager: DiscordClientManager | null = null
 
 export abstract class DjsCommand<C extends BaseContext = BaseContext> extends BaseCommand<C> {
-
-  getDiscordClient() {
+  async getDiscordClient() {
     if (!discordClientManager) {
-      throw new Error('Discord client manager not initialized. Call `await initializeDiscordClientManager()` at the start of your execute method.')
+      await this.preloadDiscordClientManager()
     }
 
-    return discordClientManager.getClient()
+    return discordClientManager!.getClient()
   }
 
   private setupEventHandlers(client: Client) {
@@ -25,7 +24,7 @@ export abstract class DjsCommand<C extends BaseContext = BaseContext> extends Ba
     })
   }
 
-  async initializeDiscordClientManager() {
+  async preloadDiscordClientManager() {
     if (discordClientManager) {
       return
     }

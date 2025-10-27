@@ -65,13 +65,13 @@ export class CleanCommand extends DjsCommand {
     }
   }
 
-  async deleteChannels(guild: Guild): Promise<void> {
+  private async deleteChannels(guild: Guild): Promise<void> {
     guild.channels.cache.forEach(async (channel) => {
       await this.deleteChannel(channel)
     })
   }
 
-  async deleteRoles(guild: Guild): Promise<void> {
+  private async deleteRoles(guild: Guild): Promise<void> {
     guild.roles.cache.forEach(async (role) => {
       if (role.name === '@everyone')
         return
@@ -81,7 +81,7 @@ export class CleanCommand extends DjsCommand {
     })
   }
 
-  async cleanGuild(guild: Guild): Promise<void> {
+  private async cleanGuild(guild: Guild): Promise<void> {
     if (this.dryRun) {
       this.logger.info(`Would clean guild: ${guild.name}`)
       this.logger.info(`Would delete ${guild.channels.cache.size} channels:`)
@@ -107,8 +107,8 @@ export class CleanCommand extends DjsCommand {
     this.logger.info(`Cleaned guild: ${guild.name}`)
   }
 
-  async cleanAllGuilds(): Promise<void> {
-    const client = this.getDiscordClient()
+  private async cleanAllGuilds(): Promise<void> {
+    const client = await this.getDiscordClient()
 
     if (this.dryRun) {
       for (const guild of client.guilds.cache.values()) {
@@ -139,9 +139,7 @@ export class CleanCommand extends DjsCommand {
   }
 
   async execute() {
-    await this.initializeDiscordClientManager()
-
-    const client = this.getDiscordClient()
+    const client = await this.getDiscordClient()
 
     let guild: Guild | undefined | null
 

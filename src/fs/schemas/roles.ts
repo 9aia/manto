@@ -15,14 +15,14 @@ export const mantoRoleSchema = z.object({
   permissions: z.array(discordPermissionSchema).optional().describe('(Optional) A list of permissions for this role.'),
 })
   .describe('Defines roles for the Discord server.')
-export type MantoRoleSchema = z.infer<typeof mantoRoleSchema>
+export type MantoRole = z.infer<typeof mantoRoleSchema>
 
 /**
  * Array of roles for the Discord server.
  */
 export const mantoRolesSchema = z.array(mantoRoleSchema)
   .describe('(Optional) The roles for the server.')
-export type MantoRolesSchema = z.infer<typeof mantoRolesSchema>
+export type MantoRoles = z.infer<typeof mantoRolesSchema>
 
 export const MANTO_SCHEMA: MantoSchema = {
   id: 'roles',

@@ -22,7 +22,7 @@ export const mantoCategorySchema = z.object({
   overwrites: z.array(categoryOverwriteSchema).optional().describe('Overwrites for this category.'),
 })
   .describe('Defines a category for the Discord server.')
-export type MantoCategorySchema = z.infer<typeof mantoCategorySchema>
+export type MantoCategory = z.infer<typeof mantoCategorySchema>
 
 export const MANTO_SCHEMA: MantoSchema = {
   id: 'category',

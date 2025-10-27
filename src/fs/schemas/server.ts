@@ -29,7 +29,7 @@ export const mantoServerSchema = z.object({
   banner_url: z.string().optional().describe('(Optional) The URL for the server banner background image.'),
 })
   .describe('Defines general settings for the Discord server.')
-export type MantoServerSchema = z.infer<typeof mantoServerSchema>
+export type MantoServer = z.infer<typeof mantoServerSchema>
 
 export const MANTO_SCHEMA: MantoSchema = {
   id: 'server',
