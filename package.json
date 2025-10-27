@@ -9,6 +9,7 @@
     "build": "echo \"Error: no build specified\" && exit 1",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "typecheck": "bun --bun tsc --noEmit",
     "release": "release-it",
     "schemagen": "bun ./scripts/generate-schemas"
   },
