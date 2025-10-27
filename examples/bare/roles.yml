@@ -1,0 +1,23 @@
+- name: Admin
+  color: "#ff0000"
+  hoist: true
+  mentionable: true
+  permissions:
+    - Administrator
+- name: Moderator
+  color: "#ffff00"
+  hoist: true
+  mentionable: true
+  permissions:
+    - ManageMessages
+    - BanMembers
+    - KickMembers
+    - ManageChannels
+- name: Member
+  color: "#00ff00"
+  permissions:
+    - SendMessages
+    - ReadMessageHistory
+    - AddReactions
+    - Connect
+    - Speak
