@@ -1,7 +1,9 @@
 import type { Channel, Guild, Role } from 'discord.js'
+import process from 'node:process'
 import { confirm } from '@clack/prompts'
 import { Option } from 'clipanion'
 import { DiscordAPIError } from 'discord.js'
+import { CacheManager } from '../../bot/cache/CacheManager'
 import { DjsCommand } from '../lib/DjsCommand'
 
 export class CleanCommand extends DjsCommand {
@@ -81,6 +83,17 @@ export class CleanCommand extends DjsCommand {
     })
   }
 
+  private async deleteCacheFiles(guild: Guild): Promise<void> {
+    try {
+      const cacheManager = new CacheManager(process.cwd())
+      await cacheManager.clearGuildState(guild.id)
+      this.logger.info(`Deleted cache files for guild: ${guild.name}`)
+    }
+    catch (error) {
+      this.logger.error(`Error deleting cache files for guild ${guild.name}: ${error}`)
+    }
+  }
+
   private async cleanGuild(guild: Guild): Promise<void> {
     if (this.dryRun) {
       this.logger.info(`Would clean guild: ${guild.name}`)
@@ -96,6 +109,7 @@ export class CleanCommand extends DjsCommand {
           return
         this.logger.info(`  - ${role.name} (${role.id})`)
       })
+      this.logger.info(`Would delete cache files for guild: ${guild.name}`)
 
       return
     }
@@ -104,6 +118,7 @@ export class CleanCommand extends DjsCommand {
 
     await this.deleteChannels(guild)
     await this.deleteRoles(guild)
+    await this.deleteCacheFiles(guild)
     this.logger.info(`Cleaned guild: ${guild.name}`)
   }
 
@@ -121,12 +136,14 @@ export class CleanCommand extends DjsCommand {
         guild.roles.cache.forEach((role) => {
           this.logger.info(`  - ${role.name} (${role.id})`)
         })
+        this.logger.info(`Would delete cache files for guild: ${guild.name}`)
       }
     }
     else {
       for (const guild of client.guilds.cache.values()) {
         await this.deleteChannels(guild)
         await this.deleteRoles(guild)
+        await this.deleteCacheFiles(guild)
       }
     }
 

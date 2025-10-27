@@ -1,13 +1,13 @@
-import type { CategoryChannel, Guild, Role, TextChannel, VoiceChannel } from 'discord.js'
-import { PermissionFlagsBits } from 'discord.js'
-import type { RootDirStructure } from '../../fs/parser/root-parser'
-import type { ParsedContent, ParserError } from '../../fs/parser/types'
-import fs from 'node:fs'
-import { promises as fsPromises } from 'node:fs'
-import path from 'node:path'
 import { confirm, select } from '@clack/prompts'
 import { Option } from 'clipanion'
+import type { CategoryChannel, Guild, TextChannel, VoiceChannel } from 'discord.js'
+import { PermissionFlagsBits } from 'discord.js'
+import fs from 'node:fs'
+import path from 'node:path'
+import { CacheManager, StateDiffer } from '../../bot/cache'
 import { parseRootDir } from '../../fs/parser'
+import type { RootDirStructure } from '../../fs/parser/root-parser'
+import type { ParsedContent, ParserError } from '../../fs/parser/types'
 import { DIR_PATH_REGEX } from '../constants/regex'
 import { DjsCommand } from '../lib/DjsCommand'
 
@@ -36,67 +36,6 @@ function convertPermissionsToBigInt(permissions: string[]): bigint {
   return permissionBits
 }
 
-/**
- * State management interfaces for tracking applied changes
- */
-interface ServerState {
-  guildId: string
-  guildName: string
-  appliedAt: string
-  serverConfig: {
-    name: string
-    icon_url?: string
-    banner_url?: string
-    manto_version: string
-  }
-}
-
-interface RoleState {
-  guildId: string
-  appliedAt: string
-  roles: Array<{
-    id: string
-    name: string
-    color: string
-    hoist: boolean
-    mentionable: boolean
-    permissions: string[]
-  }>
-}
-
-interface CategoryState {
-  guildId: string
-  appliedAt: string
-  categories: Array<{
-    id: string
-    name: string
-    overwrites?: any[]
-  }>
-}
-
-interface ChannelState {
-  guildId: string
-  appliedAt: string
-  channels: Array<{
-    id: string
-    name: string
-    type: 'text' | 'voice'
-    categoryId?: string
-    topic?: string
-    overwrites?: any[]
-  }>
-}
-
-/**
- * Helper function to ensure directory exists
- */
-async function ensureDirectoryExists(dirPath: string): Promise<void> {
-  try {
-    await fsPromises.access(dirPath)
-  } catch {
-    await fsPromises.mkdir(dirPath, { recursive: true })
-  }
-}
 
 /**
  * Resolve channel name from filename, removing extensions, prefixes, and order numbers
@@ -141,6 +80,15 @@ export class PushCommand extends DjsCommand {
     required: false,
   })
 
+  private cacheManager: CacheManager | null = null
+
+  private getCacheManager(): CacheManager {
+    if (!this.cacheManager) {
+      this.cacheManager = new CacheManager(this.rootDir)
+    }
+    return this.cacheManager
+  }
+
   private async cleanServer() {
     const args = [
       this.dryRun ? '--dry-run' : undefined,
@@ -154,155 +102,6 @@ export class PushCommand extends DjsCommand {
     return this.cli.run(['init', rootDir])
   }
 
-  /**
-   * Get the state directory path for a guild
-   */
-  private getStateDirectory(guildId: string): string {
-    return path.join(this.rootDir, '.manto', guildId)
-  }
-
-  /**
-   * Save server state to JSON file
-   */
-  private async saveServerState(guild: Guild, serverConfig: any): Promise<void> {
-    const stateDir = this.getStateDirectory(guild.id)
-    await ensureDirectoryExists(stateDir)
-
-    const serverState: ServerState = {
-      guildId: guild.id,
-      guildName: guild.name,
-      appliedAt: new Date().toISOString(),
-      serverConfig: {
-        name: serverConfig.name,
-        icon_url: serverConfig.icon_url,
-        banner_url: serverConfig.banner_url,
-        manto_version: serverConfig.manto_version,
-      },
-    }
-
-    const filePath = path.join(stateDir, 'server.json')
-    await fsPromises.writeFile(filePath, JSON.stringify(serverState, null, 2))
-    this.logger.debug(`💾 Saved server state to ${filePath}`)
-  }
-
-  /**
-   * Save roles state to JSON file
-   */
-  private async saveRolesState(guild: Guild, rolesConfig: any[]): Promise<void> {
-    const stateDir = this.getStateDirectory(guild.id)
-    await ensureDirectoryExists(stateDir)
-
-    const rolesState: RoleState = {
-      guildId: guild.id,
-      appliedAt: new Date().toISOString(),
-      roles: rolesConfig.map(roleConfig => ({
-        id: guild.roles.cache.find(r => r.name === roleConfig.name)?.id || '',
-        name: roleConfig.name,
-        color: roleConfig.color,
-        hoist: roleConfig.hoist,
-        mentionable: roleConfig.mentionable,
-        permissions: roleConfig.permissions || [],
-      })),
-    }
-
-    const filePath = path.join(stateDir, 'roles.json')
-    await fsPromises.writeFile(filePath, JSON.stringify(rolesState, null, 2))
-    this.logger.debug(`💾 Saved roles state to ${filePath}`)
-  }
-
-  /**
-   * Save categories state to JSON file
-   */
-  private async saveCategoriesState(guild: Guild, categories: Map<string, any>): Promise<void> {
-    const stateDir = this.getStateDirectory(guild.id)
-    await ensureDirectoryExists(stateDir)
-
-    const categoriesState: CategoryState = {
-      guildId: guild.id,
-      appliedAt: new Date().toISOString(),
-      categories: Array.from(categories.entries())
-        .filter(([categoryName]) => categoryName !== '_') // Exclude "_" category
-        .map(([categoryName, categoryStructure]) => {
-          const category = guild.channels.cache.find(c => c.type === 4 && c.name === categoryName) as CategoryChannel | undefined
-          return {
-            id: category?.id || '',
-            name: categoryName,
-            overwrites: isParsedContent(categoryStructure.config) ? categoryStructure.config.data.overwrites : undefined,
-          }
-        }),
-    }
-
-    const filePath = path.join(stateDir, 'categories.json')
-    await fsPromises.writeFile(filePath, JSON.stringify(categoriesState, null, 2))
-    this.logger.debug(`💾 Saved categories state to ${filePath}`)
-  }
-
-  /**
-   * Save channels state to JSON file
-   */
-  private async saveChannelsState(guild: Guild, categories: Map<string, any>): Promise<void> {
-    const stateDir = this.getStateDirectory(guild.id)
-    await ensureDirectoryExists(stateDir)
-
-    const channels: ChannelState['channels'] = []
-
-    for (const [categoryName, categoryStructure] of categories) {
-      let category: CategoryChannel | undefined = undefined
-      
-      // Handle "_" category specially - channels are root-level
-      if (categoryName !== '_') {
-        category = guild.channels.cache.find(c => c.type === 4 && c.name === categoryName) as CategoryChannel | undefined
-      }
-
-      // Add text channels
-      for (const channelConfig of categoryStructure.textChannels) {
-        const resolvedName = resolveChannelName(channelConfig.filePath)
-        const channel = categoryName === '_'
-          ? guild.channels.cache.find(c => c.type === 0 && c.name === resolvedName && !c.parent) as TextChannel | undefined
-          : category?.children.cache.find(c => c.type === 0 && c.name === resolvedName) as TextChannel | undefined
-          
-        if (channel) {
-          channels.push({
-            id: channel.id,
-            name: resolvedName,
-            type: 'text',
-            categoryId: category?.id, // Will be undefined for root-level channels
-            topic: channelConfig.data.topic,
-            overwrites: channelConfig.data.overwrites,
-          })
-        }
-      }
-
-      // Add voice channels
-      for (const channelConfig of categoryStructure.voiceChannels) {
-        const resolvedName = resolveChannelName(channelConfig.filePath)
-        const channel = categoryName === '_'
-          ? guild.channels.cache.find(c => c.type === 2 && c.name === resolvedName && !c.parent) as VoiceChannel | undefined
-          : category?.children.cache.find(c => c.type === 2 && c.name === resolvedName) as VoiceChannel | undefined
-          
-        if (channel) {
-          channels.push({
-            id: channel.id,
-            name: resolvedName,
-            type: 'voice',
-            categoryId: category?.id, // Will be undefined for root-level channels
-            overwrites: channelConfig.data.overwrites,
-          })
-        }
-      }
-    }
-
-    const channelsState: ChannelState = {
-      guildId: guild.id,
-      appliedAt: new Date().toISOString(),
-      channels,
-    }
-
-    const filePath = path.join(stateDir, 'channels.json')
-    await fsPromises.writeFile(filePath, JSON.stringify(channelsState, null, 2))
-    this.logger.debug(`💾 Saved channels state to ${filePath}`)
-  }
-
   private async push(rootDir: string) {
     const structure = await parseRootDir(rootDir)
 
@@ -310,10 +109,22 @@ export class PushCommand extends DjsCommand {
     const client = await this.getDiscordClient()
     const guild = await this.selectGuild(client)
 
+    // Check for conflicts unless dangerously-clean is specified
+    if (!this.dangerouslyClean) {
+      await this.checkForConflicts(guild)
+    }
+
+    // Load cached state for comparison
+    const cacheManager = this.getCacheManager()
+    const cachedState = await cacheManager.loadGuildState(guild.id)
+
+    // Detect changes
+    const changeDetection = await StateDiffer.detectChanges(guild, structure, cachedState, resolveChannelName)
+
     if (this.dryRun) {
-      await this.dryRunPush(structure, guild)
+      await this.dryRunPush(structure, guild, changeDetection)
     } else {
-      await this.applyChanges(structure, guild)
+      await this.applyChanges(structure, guild, changeDetection)
     }
   }
 
@@ -351,106 +162,166 @@ export class PushCommand extends DjsCommand {
     return client.guilds.cache.get(selectedGuildId as string)
   }
 
-  private async dryRunPush(structure: RootDirStructure, guild: Guild) {
+  private async checkForConflicts(guild: Guild): Promise<void> {
+    const cacheManager = this.getCacheManager()
+    const cachedState = await cacheManager.loadGuildState(guild.id)
+    
+    // If there's cached state, no conflicts (server was previously managed by Manto)
+    if (cachedState.server || cachedState.roles || cachedState.categories || cachedState.channels) {
+      return
+    }
+
+    // Check for existing channels (excluding system channels)
+    const existingChannels = guild.channels.cache.filter(channel => {
+      // Skip system channels that Discord requires
+      if (channel.type === 0 && channel.name === 'general') return false
+      if (channel.type === 2 && channel.name === 'General') return false
+      // Skip system channels (rules, announcements, etc.)
+      if (channel.type === 5) return false // Announcement channel
+      if (channel.type === 15) return false // Forum channel
+      return true
+    })
+
+    // Check for existing roles (excluding @everyone and managed roles)
+    const existingRoles = guild.roles.cache.filter(role => {
+      if (role.name === '@everyone') return false
+      if (role.managed) return false
+      return true
+    })
+
+    const conflicts: string[] = []
+
+    if (existingChannels.size > 0) {
+      conflicts.push(`Found ${existingChannels.size} existing channels:`)
+      existingChannels.forEach(channel => {
+        const channelType = channel.type === 0 ? 'Text' : 
+                           channel.type === 2 ? 'Voice' : 
+                           channel.type === 4 ? 'Category' :
+                           channel.type === 5 ? 'Announcement' :
+                           channel.type === 15 ? 'Forum' : 'Unknown'
+        conflicts.push(`  - ${channelType}: ${channel.name} (${channel.id})`)
+      })
+    }
+
+    if (existingRoles.size > 0) {
+      conflicts.push(`Found ${existingRoles.size} existing roles:`)
+      existingRoles.forEach(role => {
+        conflicts.push(`  - ${role.name} (${role.id})`)
+      })
+    }
+
+    if (conflicts.length > 0) {
+      this.logger.error('❌ CONFLICT DETECTED: Server is not empty!')
+      this.logger.error('')
+      conflicts.forEach(conflict => this.logger.error(conflict))
+      this.logger.error('')
+      this.logger.error('The server must be empty (except for Discord\'s required channels/roles) to apply Manto configuration.')
+      this.logger.error('')
+      this.logger.error('Options:')
+      this.logger.error('  1. Use --dangerously-clean to remove all existing channels and roles')
+      this.logger.error('  2. Manually clean the server first')
+      this.logger.error('  3. Use a different empty server')
+      this.logger.error('')
+      throw new Error('Server conflict detected - server is not empty')
+    }
+  }
+
+  private async dryRunPush(structure: RootDirStructure, guild: Guild, changeDetection: any) {
     this.logger.info('🔍 DRY RUN MODE - No changes will be applied')
     this.logger.info(`Target guild: ${guild.name} (${guild.id})`)
 
+    if (!changeDetection.hasChanges) {
+      this.logger.info('\n✅ No changes detected - everything is up to date!')
+      return
+    }
+
+    this.logger.info('\n📋 Changes detected:')
+
     // Server changes
-    if (isParsedContent(structure.server)) {
+    if (changeDetection.changes.server?.hasChanges) {
       this.logger.info('\n📋 Server Changes:')
-      this.logger.info(`  Name: ${guild.name} → ${structure.server.data.name}`)
-      if (structure.server.data.icon_url) {
-        this.logger.info(`  Icon URL: ${guild.iconURL() || 'None'} → ${structure.server.data.icon_url}`)
+      const changes = changeDetection.changes.server.changes
+      if (changes.name) {
+        this.logger.info(`  Name: ${changes.name.from} → ${changes.name.to}`)
       }
-      if (structure.server.data.banner_url) {
-        this.logger.info(`  Banner URL: ${guild.bannerURL() || 'None'} → ${structure.server.data.banner_url}`)
+      if (changes.icon_url) {
+        this.logger.info(`  Icon URL: ${changes.icon_url.from || 'None'} → ${changes.icon_url.to || 'None'}`)
       }
-    } else {
-      const error = structure.server && 'message' in structure.server 
-        ? structure.server.message 
-        : 'Unknown error'
-      this.logger.warn(`⚠️  Skipping server changes due to config error: ${error}`)
+      if (changes.banner_url) {
+        this.logger.info(`  Banner URL: ${changes.banner_url.from || 'None'} → ${changes.banner_url.to || 'None'}`)
+      }
     }
 
-    // Roles changes
-    if (isParsedContent(structure.roles)) {
+    // Role changes
+    if (changeDetection.changes.roles?.hasChanges) {
       this.logger.info('\n👥 Role Changes:')
-      const existingRoles = guild.roles.cache.filter(role => !role.managed && role.name !== '@everyone')
+      const changes = changeDetection.changes.roles
       
-      for (const roleConfig of structure.roles.data) {
-        const existingRole = existingRoles.find(r => r.name === roleConfig.name)
-        if (existingRole) {
-          this.logger.info(`  Update role: ${roleConfig.name}`)
-          this.logger.info(`    Color: ${existingRole.hexColor} → ${roleConfig.color}`)
-          this.logger.info(`    Hoist: ${existingRole.hoist} → ${roleConfig.hoist}`)
-          this.logger.info(`    Mentionable: ${existingRole.mentionable} → ${roleConfig.mentionable}`)
-        } else {
-          this.logger.info(`  Create role: ${roleConfig.name}`)
-          this.logger.info(`    Color: ${roleConfig.color}`)
-          this.logger.info(`    Hoist: ${roleConfig.hoist}`)
-          this.logger.info(`    Mentionable: ${roleConfig.mentionable}`)
+      if (changes.toCreate.length > 0) {
+        this.logger.info(`  Create roles: ${changes.toCreate.map((r: any) => r.name).join(', ')}`)
+      }
+      if (changes.toUpdate.length > 0) {
+        for (const update of changes.toUpdate) {
+          this.logger.info(`  Update role: ${update.name}`)
+          Object.entries(update.changes).forEach(([key, change]: [string, any]) => {
+            this.logger.info(`    ${key}: ${change.from} → ${change.to}`)
+          })
         }
       }
-    } else {
-      const error = structure.roles && 'message' in structure.roles 
-        ? structure.roles.message 
-        : 'Unknown error'
-      this.logger.warn(`⚠️  Skipping role changes due to config error: ${error}`)
+      if (changes.toDelete.length > 0) {
+        this.logger.info(`  Delete roles: ${changes.toDelete.map((r: any) => r.name).join(', ')}`)
+      }
     }
 
-    // Categories and channels
-    this.logger.info('\n📁 Category & Channel Changes:')
-    for (const [categoryName, categoryStructure] of structure.categories) {
-      if (categoryName === '_') {
-        this.logger.info(`  Root-level channels (no category):`)
-      } else {
-        const existingCategory = guild.channels.cache.find(
-          c => c.type === 4 && c.name === categoryName
-        ) as CategoryChannel | undefined
+    // Category changes
+    if (changeDetection.changes.categories?.hasChanges) {
+      this.logger.info('\n📁 Category Changes:')
+      const changes = changeDetection.changes.categories
+      
+      if (changes.toCreate.length > 0) {
+        this.logger.info(`  Create categories: ${changes.toCreate.map((c: any) => c.name).join(', ')}`)
+      }
+      if (changes.toUpdate.length > 0) {
+        this.logger.info(`  Update categories: ${changes.toUpdate.map((c: any) => c.name).join(', ')}`)
+      }
+      if (changes.toDelete.length > 0) {
+        this.logger.info(`  Delete categories: ${changes.toDelete.map((c: any) => c.name).join(', ')}`)
+      }
+    }
 
-        if (existingCategory) {
-          this.logger.info(`  Update category: ${categoryName}`)
-        } else {
-          this.logger.info(`  Create category: ${categoryName}`)
+    // Channel changes
+    if (changeDetection.changes.channels?.hasChanges) {
+      this.logger.info('\n💬 Channel Changes:')
+      const changes = changeDetection.changes.channels
+      
+      if (changes.toCreate.length > 0) {
+        this.logger.info(`  Create channels: ${changes.toCreate.map((c: any) => `${c.name} (${c.type})`).join(', ')}`)
+      }
+      if (changes.toUpdate.length > 0) {
+        for (const update of changes.toUpdate) {
+          this.logger.info(`  Update channel: ${update.name}`)
+          Object.entries(update.changes).forEach(([key, change]: [string, any]) => {
+            if (key === 'topic') {
+              this.logger.info(`    ${key}: ${change.from || 'None'} → ${change.to || 'None'}`)
+            } else {
+              this.logger.info(`    ${key}: updated`)
+            }
+          })
         }
       }
-
-      // Text channels
-      for (const channelConfig of categoryStructure.textChannels) {
-        const resolvedName = resolveChannelName(channelConfig.filePath)
-        const existingChannel = categoryName === '_'
-          ? guild.channels.cache.find(c => c.type === 0 && c.name === resolvedName && !c.parent) as TextChannel | undefined
-          : (guild.channels.cache.find(c => c.type === 4 && c.name === categoryName) as CategoryChannel | undefined)?.children.cache.find((c: any) => c.type === 0 && c.name === resolvedName) as TextChannel | undefined
-
-        if (existingChannel) {
-          const location = categoryName === '_' ? 'root level' : `in category ${categoryName}`
-          this.logger.info(`    Update text channel: ${resolvedName} (${location})`)
-        } else {
-          const location = categoryName === '_' ? 'root level' : `in category ${categoryName}`
-          this.logger.info(`    Create text channel: ${resolvedName} (${location})`)
-        }
-      }
-
-      // Voice channels
-      for (const channelConfig of categoryStructure.voiceChannels) {
-        const resolvedName = resolveChannelName(channelConfig.filePath)
-        const existingChannel = categoryName === '_'
-          ? guild.channels.cache.find(c => c.type === 2 && c.name === resolvedName && !c.parent) as VoiceChannel | undefined
-          : (guild.channels.cache.find(c => c.type === 4 && c.name === categoryName) as CategoryChannel | undefined)?.children.cache.find((c: any) => c.type === 2 && c.name === resolvedName) as VoiceChannel | undefined
-
-        if (existingChannel) {
-          const location = categoryName === '_' ? 'root level' : `in category ${categoryName}`
-          this.logger.info(`    Update voice channel: ${resolvedName} (${location})`)
-        } else {
-          const location = categoryName === '_' ? 'root level' : `in category ${categoryName}`
-          this.logger.info(`    Create voice channel: ${resolvedName} (${location})`)
-        }
+      if (changes.toDelete.length > 0) {
+        this.logger.info(`  Delete channels: ${changes.toDelete.map((c: any) => `${c.name} (${c.type})`).join(', ')}`)
       }
     }
   }
 
-  private async applyChanges(structure: RootDirStructure, guild: Guild) {
+  private async applyChanges(structure: RootDirStructure, guild: Guild, changeDetection: any) {
     this.logger.info(`🚀 Applying changes to guild: ${guild.name} (${guild.id})`)
+
+    if (!changeDetection.hasChanges) {
+      this.logger.info('✅ No changes detected - everything is up to date!')
+      return
+    }
 
     let hasErrors = false
     let serverApplied = false
@@ -458,57 +329,50 @@ export class PushCommand extends DjsCommand {
     let categoriesApplied = false
 
     // Apply server changes
-    if (isParsedContent(structure.server)) {
+    if (changeDetection.changes.server?.hasChanges) {
       try {
-        await this.applyServerChanges(structure.server.data, guild)
+        await this.applyServerChanges(isParsedContent(structure.server) ? structure.server.data : null, guild, changeDetection.changes.server)
         serverApplied = true
       } catch (error) {
         this.logger.error(`❌ Error applying server changes: ${error}`)
         hasErrors = true
       }
-    } else {
-      const error = structure.server && 'message' in structure.server 
-        ? structure.server.message 
-        : 'Unknown error'
-      this.logger.warn(`⚠️  Skipping server changes due to config error: ${error}`)
     }
 
     // Apply role changes
-    if (isParsedContent(structure.roles)) {
+    if (changeDetection.changes.roles?.hasChanges) {
       try {
-        await this.applyRoleChanges(structure.roles.data, guild)
+        await this.applyRoleChanges(guild, changeDetection.changes.roles)
         rolesApplied = true
       } catch (error) {
         this.logger.error(`❌ Error applying role changes: ${error}`)
         hasErrors = true
       }
-    } else {
-      const error = structure.roles && 'message' in structure.roles 
-        ? structure.roles.message 
-        : 'Unknown error'
-      this.logger.warn(`⚠️  Skipping role changes due to config error: ${error}`)
     }
 
     // Apply category and channel changes
-    try {
-      await this.applyCategoryChanges(structure.categories, guild)
-      categoriesApplied = true
-    } catch (error) {
-      this.logger.error(`❌ Error applying category/channel changes: ${error}`)
-      hasErrors = true
+    if (changeDetection.changes.categories?.hasChanges || changeDetection.changes.channels?.hasChanges) {
+      try {
+        await this.applyCategoryChanges(guild, changeDetection.changes.categories, changeDetection.changes.channels)
+        categoriesApplied = true
+      } catch (error) {
+        this.logger.error(`❌ Error applying category/channel changes: ${error}`)
+        hasErrors = true
+      }
     }
 
     // Save state for successfully applied changes
     try {
+      const cacheManager = this.getCacheManager()
       if (serverApplied && isParsedContent(structure.server)) {
-        await this.saveServerState(guild, structure.server.data)
+        await cacheManager.saveServerState(guild, structure.server.data)
       }
       if (rolesApplied && isParsedContent(structure.roles)) {
-        await this.saveRolesState(guild, structure.roles.data)
+        await cacheManager.saveRolesState(guild, structure.roles.data)
       }
       if (categoriesApplied) {
-        await this.saveCategoriesState(guild, structure.categories)
-        await this.saveChannelsState(guild, structure.categories)
+        await cacheManager.saveCategoriesState(guild, structure.categories)
+        await cacheManager.saveChannelsState(guild, structure.categories, resolveChannelName)
       }
       this.logger.info('💾 State saved successfully')
     } catch (error) {
@@ -522,22 +386,23 @@ export class PushCommand extends DjsCommand {
     }
   }
 
-  private async applyServerChanges(serverConfig: any, guild: Guild) {
+  private async applyServerChanges(serverConfig: any, guild: Guild, serverChanges: any) {
     this.logger.info('📋 Applying server changes...')
     
     const updates: any = {}
+    const changes = serverChanges.changes
     
-    if (serverConfig.name && serverConfig.name !== guild.name) {
-      updates.name = serverConfig.name
+    if (changes.name) {
+      updates.name = changes.name.to
     }
     
-    if (serverConfig.icon_url && serverConfig.icon_url !== guild.iconURL()) {
+    if (changes.icon_url) {
       // Note: Discord.js doesn't support setting icon from URL directly
       // This would need to be implemented with file upload
       this.logger.warn('⚠️  Icon URL changes require file upload - not implemented yet')
     }
 
-    if (serverConfig.banner_url && serverConfig.banner_url !== guild.bannerURL()) {
+    if (changes.banner_url) {
       // Note: Discord.js doesn't support setting banner from URL directly
       // This would need to be implemented with file upload
       this.logger.warn('⚠️  Banner URL changes require file upload - not implemented yet')
@@ -551,165 +416,156 @@ export class PushCommand extends DjsCommand {
     }
   }
 
-  private async applyRoleChanges(rolesConfig: any[], guild: Guild) {
+  private async applyRoleChanges(guild: Guild, roleChanges: any) {
     this.logger.info('👥 Applying role changes...')
     
-    for (const roleConfig of rolesConfig) {
-      const existingRole = guild.roles.cache.find(r => r.name === roleConfig.name && !r.managed)
+    // Create new roles
+    for (const roleConfig of roleChanges.toCreate) {
+      const roleOptions: any = {
+        name: roleConfig.name,
+        color: roleConfig.color,
+        hoist: roleConfig.hoist,
+        mentionable: roleConfig.mentionable,
+      }
       
-      if (existingRole) {
-        // Update existing role
+      if (roleConfig.permissions && Array.isArray(roleConfig.permissions)) {
+        roleOptions.permissions = convertPermissionsToBigInt(roleConfig.permissions)
+      }
+      
+      await guild.roles.create(roleOptions)
+      this.logger.info(`✅ Created role: ${roleConfig.name}`)
+    }
+
+    // Update existing roles
+    for (const update of roleChanges.toUpdate) {
+      const role = guild.roles.cache.get(update.id)
+      if (role) {
         const updates: any = {}
         
-        if (roleConfig.color && roleConfig.color !== existingRole.hexColor) {
-          updates.color = roleConfig.color
+        if (update.changes.color) {
+          updates.color = update.changes.color.to
         }
         
-        if (roleConfig.hoist !== existingRole.hoist) {
-          updates.hoist = roleConfig.hoist
+        if (update.changes.hoist) {
+          updates.hoist = update.changes.hoist.to
         }
         
-        if (roleConfig.mentionable !== existingRole.mentionable) {
-          updates.mentionable = roleConfig.mentionable
+        if (update.changes.mentionable) {
+          updates.mentionable = update.changes.mentionable.to
         }
 
-        if (Object.keys(updates).length > 0) {
-          await existingRole.edit(updates)
-          this.logger.info(`✅ Updated role: ${roleConfig.name}`)
-        } else {
-          this.logger.info(`ℹ️  No changes needed for role: ${roleConfig.name}`)
-        }
-      } else {
-        // Create new role
-        const roleOptions: any = {
-          name: roleConfig.name,
-          color: roleConfig.color,
-          hoist: roleConfig.hoist,
-          mentionable: roleConfig.mentionable,
-        }
-        
-        if (roleConfig.permissions && Array.isArray(roleConfig.permissions)) {
-          roleOptions.permissions = convertPermissionsToBigInt(roleConfig.permissions)
-        }
-        
-        await guild.roles.create(roleOptions)
-        this.logger.info(`✅ Created role: ${roleConfig.name}`)
+        await role.edit(updates)
+        this.logger.info(`✅ Updated role: ${update.name}`)
+      }
+    }
+
+    // Delete removed roles
+    for (const deleteRole of roleChanges.toDelete) {
+      const role = guild.roles.cache.get(deleteRole.id)
+      if (role) {
+        await role.delete()
+        this.logger.info(`✅ Deleted role: ${deleteRole.name}`)
       }
     }
   }
 
-  private async applyCategoryChanges(categories: Map<string, any>, guild: Guild) {
+  private async applyCategoryChanges(guild: Guild, categoryChanges: any, channelChanges: any) {
     this.logger.info('📁 Applying category and channel changes...')
     
-    for (const [categoryName, categoryStructure] of categories) {
-      try {
-        let category: CategoryChannel | undefined = undefined
-
-        // Handle "_" category specially - channels go to root level
-        if (categoryName === '_') {
-          this.logger.info(`📁 Processing root-level channels (no category)`)
-        } else {
-          // Create or update real category
-          category = guild.channels.cache.find(
-            c => c.type === 4 && c.name === categoryName
-          ) as CategoryChannel | undefined
-
-          if (!category) {
-            const categoryOptions: any = {
-              name: categoryName,
-              type: 4, // CategoryChannel
-            }
-            
-            // Add permission overrides if config exists and is valid
-            if (isParsedContent(categoryStructure.config) && categoryStructure.config.data.overwrites) {
-              categoryOptions.permissionOverwrites = categoryStructure.config.data.overwrites
-            }
-            
-            const newCategory = await guild.channels.create(categoryOptions)
-            category = newCategory as unknown as CategoryChannel
-            this.logger.info(`✅ Created category: ${categoryName}`)
-          } else {
-            this.logger.info(`ℹ️  Using existing category: ${categoryName}`)
-          }
+    // Apply category changes
+    if (categoryChanges?.hasChanges) {
+      // Create new categories
+      for (const categoryConfig of categoryChanges.toCreate) {
+        const categoryOptions: any = {
+          name: categoryConfig.name,
+          type: 4, // CategoryChannel
         }
-
-        // Create/update text channels
-        for (const channelConfig of categoryStructure.textChannels) {
-          try {
-            const resolvedName = resolveChannelName(channelConfig.filePath)
-            
-            // For root-level channels, search in guild channels directly
-            const existingChannel = categoryName === '_' 
-              ? guild.channels.cache.find(c => c.type === 0 && c.name === resolvedName && !c.parent) as TextChannel | undefined
-              : category?.children.cache.find(c => c.type === 0 && c.name === resolvedName) as TextChannel | undefined
-
-            if (!existingChannel) {
-              const channelOptions: any = {
-                name: resolvedName,
-                type: 0, // TextChannel
-              }
-              
-              // Only set parent if it's not a root-level channel
-              if (categoryName !== '_' && category) {
-                channelOptions.parent = category
-              }
-              
-              if (channelConfig.data.topic) {
-                channelOptions.topic = channelConfig.data.topic
-              }
-              
-              if (channelConfig.data.overwrites) {
-                channelOptions.permissionOverwrites = channelConfig.data.overwrites
-              }
-              
-              await guild.channels.create(channelOptions)
-              const location = categoryName === '_' ? 'root level' : `in category ${categoryName}`
-              this.logger.info(`✅ Created text channel: ${resolvedName} (${location})`)
-            } else {
-              this.logger.info(`ℹ️  Using existing text channel: ${resolvedName}`)
-            }
-          } catch (error) {
-            this.logger.error(`❌ Error creating text channel ${resolveChannelName(channelConfig.filePath)}: ${error}`)
-          }
+        
+        if (categoryConfig.overwrites) {
+          categoryOptions.permissionOverwrites = categoryConfig.overwrites
         }
+        
+        await guild.channels.create(categoryOptions)
+        this.logger.info(`✅ Created category: ${categoryConfig.name}`)
+      }
 
-        // Create/update voice channels
-        for (const channelConfig of categoryStructure.voiceChannels) {
-          try {
-            const resolvedName = resolveChannelName(channelConfig.filePath)
-            
-            // For root-level channels, search in guild channels directly
-            const existingChannel = categoryName === '_' 
-              ? guild.channels.cache.find(c => c.type === 2 && c.name === resolvedName && !c.parent) as VoiceChannel | undefined
-              : category?.children.cache.find(c => c.type === 2 && c.name === resolvedName) as VoiceChannel | undefined
-
-            if (!existingChannel) {
-              const channelOptions: any = {
-                name: resolvedName,
-                type: 2, // VoiceChannel
-              }
-              
-              // Only set parent if it's not a root-level channel
-              if (categoryName !== '_' && category) {
-                channelOptions.parent = category
-              }
-              
-              if (channelConfig.data.overwrites) {
-                channelOptions.permissionOverwrites = channelConfig.data.overwrites
-              }
-              
-              await guild.channels.create(channelOptions)
-              const location = categoryName === '_' ? 'root level' : `in category ${categoryName}`
-              this.logger.info(`✅ Created voice channel: ${resolvedName} (${location})`)
-            } else {
-              this.logger.info(`ℹ️  Using existing voice channel: ${resolvedName}`)
-            }
-          } catch (error) {
-            this.logger.error(`❌ Error creating voice channel ${resolveChannelName(channelConfig.filePath)}: ${error}`)
+      // Update existing categories
+      for (const update of categoryChanges.toUpdate) {
+        const category = guild.channels.cache.get(update.id) as CategoryChannel | undefined
+        if (category) {
+          const updates: any = {}
+          
+          if (update.changes.overwrites) {
+            updates.permissionOverwrites = update.changes.overwrites.to
           }
+
+          await category.edit(updates)
+          this.logger.info(`✅ Updated category: ${update.name}`)
         }
-      } catch (error) {
-        this.logger.error(`❌ Error processing category ${categoryName}: ${error}`)
+      }
+
+      // Delete removed categories
+      for (const deleteCategory of categoryChanges.toDelete) {
+        const category = guild.channels.cache.get(deleteCategory.id) as CategoryChannel | undefined
+        if (category) {
+          await category.delete()
+          this.logger.info(`✅ Deleted category: ${deleteCategory.name}`)
+        }
+      }
+    }
+
+    // Apply channel changes
+    if (channelChanges?.hasChanges) {
+      // Create new channels
+      for (const channelConfig of channelChanges.toCreate) {
+        const channelOptions: any = {
+          name: channelConfig.name,
+          type: channelConfig.type === 'text' ? 0 : 2,
+        }
+        
+        if (channelConfig.categoryId) {
+          channelOptions.parent = channelConfig.categoryId
+        }
+        
+        if (channelConfig.topic) {
+          channelOptions.topic = channelConfig.topic
+        }
+        
+        if (channelConfig.overwrites) {
+          channelOptions.permissionOverwrites = channelConfig.overwrites
+        }
+        
+        await guild.channels.create(channelOptions)
+        const location = channelConfig.categoryId ? `in category` : 'root level'
+        this.logger.info(`✅ Created ${channelConfig.type} channel: ${channelConfig.name} (${location})`)
+      }
+
+      // Update existing channels
+      for (const update of channelChanges.toUpdate) {
+        const channel = guild.channels.cache.get(update.id) as TextChannel | VoiceChannel | undefined
+        if (channel) {
+          const updates: any = {}
+          
+          if (update.changes.topic) {
+            updates.topic = update.changes.topic.to
+          }
+          
+          if (update.changes.overwrites) {
+            updates.permissionOverwrites = update.changes.overwrites.to
+          }
+
+          await channel.edit(updates)
+          this.logger.info(`✅ Updated channel: ${update.name}`)
+        }
+      }
+
+      // Delete removed channels
+      for (const deleteChannel of channelChanges.toDelete) {
+        const channel = guild.channels.cache.get(deleteChannel.id) as TextChannel | VoiceChannel | undefined
+        if (channel) {
+          await channel.delete()
+          this.logger.info(`✅ Deleted ${deleteChannel.type} channel: ${deleteChannel.name}`)
+        }
       }
     }
   }
