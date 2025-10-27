@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { permissionsSchema } from '../permissions'
+import { permissionOverridesSchema } from '../permissions-overrides'
 
 /**
  * Slow mode delay options for Discord channels
@@ -34,7 +34,9 @@ export type HideThreadsAfter = z.infer<typeof hideThreadsAfterSchema>
 export const channelOverwriteSchema = z.object({
   role: z.string().describe('The role to apply the permissions to.'),
   get permissions() {
-    return permissionsSchema
+    return permissionOverridesSchema.describe(
+      '(Optional) Permissions for this role within this channel.',
+    )
   },
 })
 export type ChannelOverwrite = z.infer<typeof channelOverwriteSchema>
@@ -43,7 +45,7 @@ export type ChannelOverwrite = z.infer<typeof channelOverwriteSchema>
  * Base channel properties shared between text and voice channels
  */
 export const baseChannelSchema = z.object({
-  id: z.string().optional().describe('The unique identifier for the channel. It is automatically generated, you should not change it unless you know what you are doing.'),
+  id: z.string().regex(/^\d{17,20}$/, 'Invalid channel ID').optional().describe('The unique identifier for the channel. It is automatically generated, you should not change it unless you know what you are doing.'),
   name: z.string().optional().describe('The name for the channel. If not provided, the name of the channel will be the name of the file.'),
   topic: z.string().optional().describe('(Optional) The channel topic displayed at the top.'),
   slow_mode: slowModeSchema.optional().describe('The slow mode delay for the channel.'),

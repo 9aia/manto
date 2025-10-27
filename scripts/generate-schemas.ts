@@ -55,7 +55,7 @@ async function main() {
     const globalRegistrySchema = z.toJSONSchema(z.globalRegistry, {
       // TODO: Use a more permanent URI
       // uri: (id) => `https://manto.9aia.com/schemas/${id}`,
-      uri: id => path.join(__dirname, `../dist/schemas/manto-${id}.json`),
+      uri: id => `manto-${id}.json`,
       target: 'draft-2020-12',
     })
 

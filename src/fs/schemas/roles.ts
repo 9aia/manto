@@ -6,7 +6,7 @@ import { discordPermissionSchema } from './components/permissions'
  * Defines a role for the Discord server.
  */
 export const mantoRoleSchema = z.object({
-  id: z.string().optional().describe('The unique identifier for the role. It is automatically generated, you should not change it unless you know what you are doing.'),
+  id: z.string().regex(/^\d{17,20}$/, 'Invalid role ID').optional().describe('The unique identifier for the role. It is automatically generated, you should not change it unless you know what you are doing.'),
   name: z.string().describe('The name of the role.'),
   color: z.string().regex(/^#([0-9a-f]{6})$/i, 'Invalid hexadecimal color code (e.g., #0000ff)').describe('The hexadecimal color code for the role (e.g., #0000ff).'),
   icon_url: z.string().optional().describe('(Optional) The URL for the role\'s icon.'),

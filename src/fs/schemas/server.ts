@@ -18,7 +18,7 @@ export type DefaultNotifications = z.infer<typeof defaultNotificationsSchema>
  */
 export const mantoServerSchema = z.object({
   manto_version: z.string().regex(/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-z-][0-9a-z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-z-][0-9a-z-]*))*))?(?:\+([0-9a-z-]+(?:\.[0-9a-z-]+)*))?$/i, 'Invalid semantic version').describe('The version of the manto schema. https://semver.org/'),
-  id: z.string().optional().describe('The unique identifier for the Discord server. It is automatically generated, you should not change it unless you know what you are doing.'),
+  id: z.string().regex(/^\d{17,20}$/, 'Invalid server ID').optional().describe('The unique identifier for the Discord server. It is automatically generated, you should not change it unless you know what you are doing.'),
   name: z.string().describe('The name of the Discord server.'),
   icon_url: z.string().optional().describe('(Optional) The URL for the server\'s icon.'),
   afk_channel: z.string().optional().describe('(Optional) The name of the channel to move inactive users to.'),
